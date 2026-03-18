@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace MyApi.Models;
+
+public partial class CinemaRoomStatus
+{
+    public long Id { get; set; }
+
+    public string Code { get; set; } = null!;
+
+    public string? Name { get; set; }
+
+    public string? Color { get; set; }
+
+    public virtual ICollection<CinemaRoom> CinemaRooms { get; set; } = new List<CinemaRoom>();
+}
