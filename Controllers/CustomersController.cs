@@ -23,7 +23,8 @@ namespace MyApi.Controllers
 				from user in filterDto
 				join status in _context.UserCustomerStatuses
 				on user.UserStatusId equals status.Id
-				select new{
+				select new CustomerGetResDto
+				{
 						Name = user.Name,
 						Phone = user.Phone,
 						Email = user.Email,
@@ -63,11 +64,32 @@ namespace MyApi.Controllers
 			await _context.SaveChangesAsync();
 			return Ok(newUser);
 		}
+		[HttpPut("{id}")]
+		public async Task<IActionResult> Update(long id, [FromBody] CustomerUpdateReqDto dto)
+		{
+			var customer = await _context.UserCustomers.FindAsync(id);
+			if (customer == null)
+			{
+				return NotFound("Không tìm thấy khách hàng để cập nhật!");
+			}
+			if (!string.IsNullOrEmpty(dto.Name))
+			{
+				customer.Name = dto.Name;
+			}
+			if (!string.IsNullOrEmpty(dto.Email))
+			{
+				customer.Email = dto.Email;
+			}
+			customer.UpdatedAt = DateTime.Now;
+			_context.Entry(customer).State = EntityState.Modified;
+			await _context.SaveChangesAsync();
+			return Ok(new { Message = "Cập nhật thành công!", Data = customer });
+		}
 		//Helper
 		private UserCustomer ConvertDTOToEntity(CustomerCreateReqDto dto)
 		{
 			var newUser = new UserCustomer
-			{
+			{	
 				Name = dto.Name,
 				Phone = dto.Phone,
 				Email = dto.Email,

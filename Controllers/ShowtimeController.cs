@@ -47,6 +47,22 @@ namespace MyApi.Controllers
       var showtimes = await finalQuery.ToListAsync();
       return showtimes;
     }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(long id, [FromBody] ShowtimeUpdateReqDto dto)
+    {
+      var showtime = await _context.MovieShowtimes.FindAsync(id);
+      if(showtime == null)
+        return NotFound("Khong tim thay suat chieu");
+      showtime.RoomId = dto.RoomId ?? showtime.RoomId;
+      showtime.MovieId = dto.MovieId ?? showtime.RoomId;
+      showtime.BeginAt = dto.BeginAt ?? showtime.BeginAt;
+      showtime.EndAt = dto.EndAt ?? showtime.EndAt;
+      showtime.ShowtimeStatusId = dto.ShowtimeStatusId ?? showtime.ShowtimeStatusId;
+      showtime.UpdatedAt = DateTime.Now;
+      _context.Entry(showtime).State = EntityState.Modified;
+      await _context.SaveChangesAsync();
+      return Ok(showtime);
+    }
     //Helper
     private MovieShowtime ConvertDTOToEntity(ShowtimeCreateReqDto createReqDto)
     {
@@ -70,7 +86,6 @@ namespace MyApi.Controllers
       {
         query = query.Where(x => x.MovieId == showtimeFilterDto.MovieId);
       }
-
       return query;
     }
   }

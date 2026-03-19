@@ -24,12 +24,15 @@ namespace MyApi.Controllers
         on room.RoomStatusId equals status.Id
         join type in _context.CinemaRoomTypes
         on room.RoomTypeId equals type.Id
+        join cinema in _context.CinemaCinemas
+        on room.CinemaId equals cinema.Id
         select new RoomGetResDto
         {
           Id = room.Id,
           Name = room.Name,
           RoomStatus = status.Code,
           RoomType = type.Code,
+          Address = cinema.Address,
         };
       var rooms = await finalQuery.ToListAsync();
       return rooms;
@@ -41,6 +44,21 @@ namespace MyApi.Controllers
       _context.CinemaRooms.Add(newRoom);
       await _context.SaveChangesAsync();
       return Ok(newRoom);
+    }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(long id, [FromBody] RoomUpdateReqDto dto)
+    {
+      var room = await _context.CinemaRooms.FindAsync(id);
+      if(room == null)
+        return NotFound("Khong tim thay phong chieu");
+      room.Name = dto.Name ?? room.Name;
+      room.CinemaId = dto.CinemaId ?? room.CinemaId;
+      room.RoomStatusId = dto.RoomStatusId ?? room.RoomStatusId;
+      room.RoomTypeId = dto.RoomTypeId ?? room.RoomTypeId;
+      room.UpdatedAt = DateTime.Now;
+      _context.Entry(room).State = EntityState.Modified;
+      await _context.SaveChangesAsync();
+      return Ok(room);
     }
 
     //Helper

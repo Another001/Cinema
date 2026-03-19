@@ -41,7 +41,39 @@
         await _context.SaveChangesAsync();
         return Ok(newMovie);
       }
-
+      [HttpPut("{id}")]
+      public async Task<IActionResult> Update (long id, [FromBody] MovieUpdateDto dto)
+      {
+        var movie = await _context.MovieMovies.FindAsync(id);
+        if(movie == null)
+        {
+          return NotFound("Khong tim thay phim");
+        }
+        if (!string.IsNullOrEmpty(dto.Name))
+        {
+          movie.Name = dto.Name;
+        }
+        if (!string.IsNullOrEmpty(dto.Describe))
+        {
+          movie.Describe = dto.Describe;
+        }
+        if (!string.IsNullOrEmpty(dto.Title))
+        {
+          movie.Title = dto.Title;
+        }
+        if (dto.Duration.HasValue)
+        {
+          movie.Duration = dto.Duration.Value;
+        }
+        if (dto.MovieStatusId.HasValue)
+        {
+          movie.MovieStatusId = dto.MovieStatusId.Value;
+        }
+        movie.UpdatedAt = DateTime.Now;
+			  _context.Entry(movie).State = EntityState.Modified;
+			  await _context.SaveChangesAsync();
+        return Ok(movie);
+      }
       // HELPER
       private IQueryable<MovieMovie> ConvertFilterDTOToFilterEntity(MovieFilterDto filterDto)
       {

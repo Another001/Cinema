@@ -23,4 +23,12 @@ namespace MyApi.DTOs{
     public string? Name {set; get;}
     public long? Duration {set; get;}
   }
+  public class MovieUpdateDto
+  {
+    public string? Name {set; get;}
+    public string? Title {set; get;}
+    public string? Describe {set; get;}
+    public long? Duration {set; get;}
+    public long? MovieStatusId {get; set;}
+  }
 }

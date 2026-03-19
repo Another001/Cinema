@@ -19,4 +19,15 @@ namespace MyApi.DTOs
     public string Address {set; get;} = string.Empty;
     public string CinemaStatus {get; set;} = string.Empty;
   }
+  public class CinemaFilterDto
+  {
+    public string? City {set; get;}
+    public long? CinemaStatusId {set; get;}
+  }
+  public class CinemaUpdateReqDto
+  {
+    public string? City{set; get;}
+    public string? Address{set; get;}
+    public long? CinemaStatusId{set; get;}
+  }
 }
