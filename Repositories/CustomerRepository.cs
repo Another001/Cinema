@@ -53,7 +53,7 @@ public class CustomerRepository : ICustomerRepository
     return customer;
   }
   //Helper
-  public IQueryable<UserCustomer> ConvertFilterDtoToFilterEntity(CustomerFilterDto dto)
+  private IQueryable<UserCustomer> ConvertFilterDtoToFilterEntity(CustomerFilterDto dto)
   {
     var query = _context.UserCustomers.AsQueryable();
     if (!string.IsNullOrEmpty(dto.Name))

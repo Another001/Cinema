@@ -12,10 +12,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers(); 
 // 2. Đăng ký Repository
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 
 // 3. Đăng ký Service 
 // (Vì IUserService kế thừa IServiceScoped nên hệ thống DI sẽ hiểu)
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IMovieService, MockMovieService>();
 
 builder.Services.AddDbContext<TestContext>(options =>
     options.UseSqlServer(

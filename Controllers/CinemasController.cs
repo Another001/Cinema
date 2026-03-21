@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyApi.Models; 
 using MyApi.DTOs;
-using Microsoft.IdentityModel.Tokens;
+
 
 namespace MyApi.Controllers
 {
