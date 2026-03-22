@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MyApi.Models; 
 using MyApi.DTOs;
 using Microsoft.IdentityModel.Tokens;
+using MyApi.Interfaces;
 
 namespace MyApi.Controllers;
 

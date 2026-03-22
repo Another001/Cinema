@@ -1,7 +1,6 @@
 using MyApi.DTOs;
 using MyApi.Models;
 
-
 namespace MyApi.Interfaces;
 public interface ICustomerService : IServiceScoped
 {

@@ -1,7 +1,7 @@
 using MyApi.DTOs;
-using MyApi.Interfaces;
 using MyApi.Models;
 
+namespace MyApi.Interfaces;
 public interface IMovieService : IServiceScoped
 {
   Task<List<MovieGetResDto>?> ListMovie(MovieFilterDto dto);

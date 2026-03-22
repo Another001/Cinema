@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using MyApi.Models;
 using MyApi.Interfaces;
 using MyApi.DTOs;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MyApi.Repositories;
 public class CustomerRepository : ICustomerRepository
