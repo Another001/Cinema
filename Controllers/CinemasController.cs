@@ -1,110 +1,106 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MyApi.Models; 
+using MyApi.Interfaces;
 using MyApi.DTOs;
+using MyApi.Models;
 
+namespace MyApi.Controllers;
 
-namespace MyApi.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class CinemasController : ControllerBase
 {
-  [ApiController]
-	[Route("api/[controller]")]
-  public class CinemasController : ControllerBase
-  {
-    private readonly TestContext _context;
-    public CinemasController(TestContext context)
-    {
-      _context = context;
-    }
-    [HttpPost("createStatusEnum")]
-    public async Task<IActionResult> createStatusEnumCinema ([FromBody] CreateStatusEnumCinemaReq dto)
-    {
-      var newEnum = new CinemaCinemaStatus
-      {
-        Id = dto.Id,
-        Code = dto.Code,
-        Name = dto.Name,
-        Color = dto.Color,
-      };
-      _context.CinemaCinemaStatuses.Add(newEnum);
-      await _context.SaveChangesAsync();
-      return Ok(newEnum);
-    }
-    [HttpPost]
-    public async Task<IActionResult> createCinema ([FromBody] CinemaCreateReqDto dto)
-    {
-      var newCinema = ConvertDTOToEntity(dto);
-      _context.CinemaCinemas.Add(newCinema);
-      await _context.SaveChangesAsync();
-      return Ok(newCinema);
-    }
-    [HttpGet]
-    public async Task<ActionResult<List<CinemaGetResDto>>> getCinema([FromQuery] CinemaFilterDto dto)
-    {
-      var finalQuery = ConvertFilterDTOToEntity(dto);
-      var cinemas = 
-        await (from cinema in finalQuery
-          join status in _context.CinemaCinemaStatuses
-          on cinema.CinemaStatusId equals status.Id
-          select new
-          {
-            City = cinema.City,
-            Address = cinema.Address,
-            Status = status.Name,
-          }
-        ).ToListAsync();
-      return Ok(cinemas);
-    }
-    [HttpPut("{id}")]
-		public async Task<IActionResult> Update(long id, [FromBody] CinemaUpdateReqDto dto)
+	private readonly ICinemaService _userService;
+	public CinemasController(ICinemaService userService) => _userService = userService;
+	//CINEMA
+	[HttpGet("{id}")]
+	public async Task<IActionResult> GetCinema(long id)
+	{
+		try{
+			var result = await _userService.GetCinema(id);
+			return Ok(result);
+		}
+		catch(Exception ex)
 		{
-			var cinema = await _context.CinemaCinemas.FindAsync(id);
-			if (cinema == null)
-			{
-				return NotFound("Không tìm thấy rap để cập nhật!");
-			}
-			if (!string.IsNullOrEmpty(dto.City))
-			{
-				cinema.City = dto.City;
-			}
-			if (!string.IsNullOrEmpty(dto.Address))
-			{
-				cinema.Address = dto.Address;
-			}
-      if (dto.CinemaStatusId.HasValue)
-      {
-        cinema.CinemaStatusId = dto.CinemaStatusId;
-      }
-			cinema.UpdatedAt = DateTime.Now;
-			_context.Entry(cinema).State = EntityState.Modified;
-			await _context.SaveChangesAsync();
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+	[HttpGet]
+	public async Task<IActionResult> ListCinema([FromQuery] CinemaFilterDto dto)
+	{
+		var result = await _userService.ListCinema(dto);
+		return Ok(result);
+	}
+	[HttpPost]
+	public async Task<ActionResult<CinemaCinema>> CreateCinema([FromBody] CinemaCreateReqDto dto)
+	{
+		try
+		{
+			var newCinema = await _userService.CreateCinema(dto);
+			return Ok(newCinema);
+		}
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+	[HttpPut("{id}")]
+	public async Task<ActionResult<CinemaCinema>> UpdateCinema(long id, [FromBody] CinemaUpdateReqDto dto)
+	{
+		try
+		{
+			var cinema = await _userService.UpdateCinema(id, dto);
 			return Ok(cinema);
 		}
-    //Helper
-    private CinemaCinema ConvertDTOToEntity(CinemaCreateReqDto dto)
-    {
-      var entity = new CinemaCinema
-      {
-        City = dto.City,
-        Address = dto.Address,
-        CinemaStatusId = dto.CinemaStatusId,
-        CreatedAt = DateTime.Now,
-        UpdatedAt = DateTime.Now,
-        RowId = Guid.NewGuid(),
-      };
-      return entity;
-    }
-    private IQueryable<CinemaCinema> ConvertFilterDTOToEntity(CinemaFilterDto dto)
-    {
-      var query = _context.CinemaCinemas.AsQueryable();
-      if (!string.IsNullOrEmpty(dto.City))
-      {
-        query = query.Where(x => x.City == dto.City);
-      }
-      if (dto.CinemaStatusId.HasValue)
-      {
-        query = query.Where(x => x.CinemaStatusId == dto.CinemaStatusId);
-      }
-      return query;
-    }
-  }
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+
+	//ROOM
+	[HttpGet("room/{id}")]
+	public async Task<IActionResult> GetRoom(long id)
+	{
+		try
+		{
+			var result = await _userService.GetRoom(id);
+			return Ok(result);
+		}
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+	[HttpGet("room")]
+	public async Task<IActionResult> ListRoom([FromQuery] RoomFilterDto dto)
+	{
+		var result = await _userService.ListRoom(dto);
+		return Ok(result);
+	}
+	[HttpPost("room")]
+	public async Task<ActionResult<CinemaRoom>> CreateRoom([FromBody] RoomCreateReqDto dto)
+	{
+		try
+		{
+			var newRoom = await _userService.CreateRoom(dto);
+			return Ok(newRoom);	
+		}
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+	[HttpPut("room/{id}")]
+	public async Task<ActionResult<CinemaRoom>> UpdateRoom(long id, [FromBody] RoomUpdateReqDto dto)
+	{
+		try
+		{
+			var room = await _userService.UpdateRoom(id, dto);
+			return Ok(room);
+		}
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
 }

@@ -12,6 +12,13 @@ public class MovieRepository : IMovieRepository
   {
     _context = context;
   }
+  public async Task<MovieMovie?> GetMovie(long id)
+  {
+    var movie = await
+      _context.MovieMovies
+      .FirstOrDefaultAsync(x => x.Id == id && x.DeletedAt == null);
+    return movie;
+  }
   public async Task<List<MovieGetResDto>> ListMovie(MovieFilterDto dto)
   {
     var query = ConvertFilterDTOToFilterEntity(dto);
@@ -37,12 +44,12 @@ public class MovieRepository : IMovieRepository
     await _context.SaveChangesAsync();
     return newMovie;
   }
-  public async Task<MovieMovie> UpdateMovie(long id, MovieUpdateDto dto)
+  public async Task<MovieMovie?> UpdateMovie(long id, MovieUpdateDto dto)
   {
     var movie = await _context.MovieMovies.FindAsync(id);
     if(movie == null)
     {
-      throw new Exception("Khong tim thay phim");
+      return null;
     }
     if (!string.IsNullOrEmpty(dto.Name))
     {

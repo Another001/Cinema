@@ -42,12 +42,12 @@ public class ShowtimeRepository : IShowtimeRepository
     await _context.SaveChangesAsync();
     return newShowtime;
   }
-  public async Task<MovieShowtime> UpdateShowtime(long id, ShowtimeUpdateReqDto dto)
+  public async Task<MovieShowtime?> UpdateShowtime(long id, ShowtimeUpdateReqDto dto)
   {
     var showtime = await _context.MovieShowtimes.FindAsync(id);
     if(showtime == null)
     {
-      throw new Exception("Khong tim thay suat chieu");
+      return null;
     }
     showtime.RoomId = dto.RoomId ?? showtime.RoomId;
     showtime.MovieId = dto.MovieId ?? showtime.MovieId;

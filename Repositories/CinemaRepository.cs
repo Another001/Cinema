@@ -41,12 +41,12 @@ public class CinemaRepository : ICinemaRepository
     return newCinema;
   }
   
-  public async Task<CinemaCinema> UpdateCinema(long id, CinemaUpdateReqDto dto)
+  public async Task<CinemaCinema?> UpdateCinema(long id, CinemaUpdateReqDto dto)
   {
     var cinema = _context.CinemaCinemas.Find(id);
     if(cinema == null)
     {
-      throw new Exception("Khong ton tai rap phim");
+      return null;
     };
     cinema.City = dto.City ?? cinema.City;
     cinema.Address = dto.Address ?? cinema.Address;
@@ -94,12 +94,12 @@ public class CinemaRepository : ICinemaRepository
     return newRoom;
   }
   
-  public async Task<CinemaRoom> UpdateRoom(long id, RoomUpdateReqDto dto)
+  public async Task<CinemaRoom?> UpdateRoom(long id, RoomUpdateReqDto dto)
   {
     var room = _context.CinemaRooms.Find(id);
     if(room == null)
     {
-      throw new Exception("Khong ton tai phong chieu");
+      return null;
     };
     room.Name = dto.Name ?? room.Name;
     room.CinemaId = dto.CinemaId ?? room.CinemaId;

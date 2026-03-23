@@ -38,18 +38,25 @@ public class CustomerRepository : ICustomerRepository
     await _context.SaveChangesAsync();
     return newCustomer;
   }
-  public async Task<UserCustomer> Update (long id, CustomerUpdateReqDto dto)
+  public async Task<UserCustomer?> Update (long id, CustomerUpdateReqDto dto)
   {
     var customer = _context.UserCustomers.Find(id);
     if(customer == null)
     {
-      throw new Exception("Khong ton tai user");
+      return null;
     };
     customer.Name = dto.Name ?? customer.Name;
     customer.Email = dto.Email ?? customer.Email;
     customer.UpdatedAt = DateTime.Now;
     await _context.SaveChangesAsync();
     return customer;
+  }
+
+  //Validate function
+  public async Task<bool> IsPhoneExisted(string phone)
+  {
+    return await _context.UserCustomers
+      .AnyAsync(x => x.Phone == phone && x.DeletedAt == null);
   }
   //Helper
   private IQueryable<UserCustomer> ConvertFilterDtoToFilterEntity(CustomerFilterDto dto)

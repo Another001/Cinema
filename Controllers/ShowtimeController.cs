@@ -1,92 +1,49 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MyApi.Models;
+using MyApi.Models; 
 using MyApi.DTOs;
+using MyApi.Interfaces;
 
-namespace MyApi.Controllers
+namespace MyApi.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ShowtimeController : ControllerBase
 {
-  [ApiController]
-  [Route("api/[controller]")]
-  public class ShowtimeController : ControllerBase
+  private readonly IShowtimeService _useService;
+  public ShowtimeController(IShowtimeService useService)
   {
-    private readonly TestContext _context;
-    public ShowtimeController (TestContext context)
+    _useService = useService;
+  }
+  [HttpGet]
+  public async Task<ActionResult<List<ShowtimeGetResDto>>> ListShowtime([FromQuery] ShowtimeFilterDto dto)
+  {
+    var showtimes = await _useService.ListShowtime(dto);
+    return Ok(showtimes);
+  }
+  [HttpPost]
+  public async Task<ActionResult<ShowtimeGetResDto>> CreateShowtime([FromBody] ShowtimeCreateReqDto dto)
+  {
+    try
     {
-      _context = context;
-    }
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] ShowtimeCreateReqDto createReqDto)
-    {
-      var newShowtime = ConvertDTOToEntity(createReqDto);
-      _context.MovieShowtimes.Add(newShowtime);
-      await _context.SaveChangesAsync();
+      var newShowtime = await _useService.CreateShowtime(dto);
       return Ok(newShowtime);
     }
-
-    [HttpGet]
-    public async Task<ActionResult<List<ShowtimeGetResDto>>> Get([FromQuery] ShowtimeFilterDto showtimeFilterDto)
+    catch(Exception ex)
     {
-      var query = ConvertFilterDTOToFilterEntity(showtimeFilterDto);
-      var finalQuery = 
-        from showtime in query
-        join movie in _context.MovieMovies
-        on showtime.MovieId equals movie.Id
-        join room in _context.CinemaRooms
-        on showtime.RoomId equals room.Id
-        join cinema in _context.CinemaCinemas
-        on room.CinemaId equals cinema.Id
-        select new ShowtimeGetResDto
-        {
-          Id = showtime.Id,
-          MovieName = movie.Name,
-          CinemaAddress = cinema.Address,
-          RoomName = room.Name,
-          BeginAt = showtime.BeginAt,
-          EndAt = showtime.EndAt,
-        };
-      var showtimes = await finalQuery.ToListAsync();
-      return showtimes;
+      return BadRequest(ex.Message);
     }
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(long id, [FromBody] ShowtimeUpdateReqDto dto)
+  }
+  [HttpPut("{id}")]
+  public async Task<ActionResult<MovieShowtime>> UpdateShowtime([FromRoute] long id, [FromBody] ShowtimeUpdateReqDto dto)
+  {
+    try
     {
-      var showtime = await _context.MovieShowtimes.FindAsync(id);
-      if(showtime == null)
-        return NotFound("Khong tim thay suat chieu");
-      showtime.RoomId = dto.RoomId ?? showtime.RoomId;
-      showtime.MovieId = dto.MovieId ?? showtime.RoomId;
-      showtime.BeginAt = dto.BeginAt ?? showtime.BeginAt;
-      showtime.EndAt = dto.EndAt ?? showtime.EndAt;
-      showtime.ShowtimeStatusId = dto.ShowtimeStatusId ?? showtime.ShowtimeStatusId;
-      showtime.UpdatedAt = DateTime.Now;
-      _context.Entry(showtime).State = EntityState.Modified;
-      await _context.SaveChangesAsync();
+      var showtime = await _useService.UpdateShowtime(id, dto);
       return Ok(showtime);
     }
-    //Helper
-    private MovieShowtime ConvertDTOToEntity(ShowtimeCreateReqDto createReqDto)
+    catch (Exception ex)
     {
-      var entity = new MovieShowtime
-      {
-        MovieId = createReqDto.MovieId,
-        RoomId = createReqDto.RoomId,
-        BeginAt = createReqDto.BeginAt,
-        EndAt = createReqDto.EndAt,
-        ShowtimeStatusId = createReqDto.ShowtimeStatusId,
-        CreatedAt = DateTime.Now,
-        UpdatedAt = DateTime.Now,
-        RowId = Guid.NewGuid()
-      };
-      return entity;
-    }
-    private IQueryable<MovieShowtime> ConvertFilterDTOToFilterEntity(ShowtimeFilterDto showtimeFilterDto)
-    {
-      var query = _context.MovieShowtimes.AsQueryable();
-      if (showtimeFilterDto.MovieId.HasValue)
-      {
-        query = query.Where(x => x.MovieId == showtimeFilterDto.MovieId);
-      }
-      return query;
+      return BadRequest(ex.Message);
     }
   }
 }

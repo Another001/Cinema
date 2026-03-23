@@ -1,4 +1,3 @@
-using MyApi.Repositories;
 using MyApi.DTOs;
 using MyApi.Interfaces;
 using MyApi.Models;
@@ -19,6 +18,10 @@ public class MockMovieService : IMovieService
   }
   public async Task<MovieMovie> CreateMovie(MovieCreateReqDto dto)
   {
+    if (string.IsNullOrEmpty(dto.Name))
+    {
+      throw new Exception("Ten khong duoc de trong");
+    }
     var newMovie = ConvertDTOToEntity(dto);
     await _useRepo.CreateMovie(newMovie);
     return newMovie;
@@ -28,6 +31,10 @@ public class MockMovieService : IMovieService
     try
     {
       var newMovie = await _useRepo.UpdateMovie(id, dto);
+      if(newMovie == null)
+      {
+        throw new Exception("Khong tim thay phim");
+      }
       return newMovie;
     }
     catch

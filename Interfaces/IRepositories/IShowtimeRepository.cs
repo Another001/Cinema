@@ -6,5 +6,5 @@ public interface IShowtimeRepository
 {
   Task<List<ShowtimeGetResDto>> ListShowtime(ShowtimeFilterDto dto);
   Task<MovieShowtime> CreateShowtime(MovieShowtime dto);
-  Task<MovieShowtime> UpdateShowtime(long id, ShowtimeUpdateReqDto dto);
+  Task<MovieShowtime?> UpdateShowtime(long id, ShowtimeUpdateReqDto dto);
 }

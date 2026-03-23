@@ -13,14 +13,14 @@ public class CustomerService : ICustomerService
   public async Task<CustomerGetResDto?> Get(long id)
     {
     var user = await _userRepo.Get(id);
-    if (user == null) return null;
-
-    // Mapping thủ công từ Entity sang DTO
+    if (user == null) 
+      throw new KeyNotFoundException($"Không tìm thấy khách hàng với ID: {id}");
+    
     return new CustomerGetResDto {
-        Name = user.Name,
-        Email = user.Email,
-        Phone = user.Phone,
-        Status = user.UserStatus.Name
+      Name = user.Name,
+      Email = user.Email,
+      Phone = user.Phone,
+      Status = user.UserStatus.Name
     };
   }
   public async Task<List<CustomerGetResDto>?> List(CustomerFilterDto dto)
@@ -30,6 +30,27 @@ public class CustomerService : ICustomerService
   }
   public async Task<UserCustomer> Create(CustomerCreateReqDto dto)
   {
+    if (string.IsNullOrEmpty(dto.Name))
+    {
+      throw new Exception("Ten khong duoc de trong");
+    }
+    if (string.IsNullOrEmpty(dto.Email))
+    {
+      throw new Exception("Email khong duoc de trong");
+    }
+    if (string.IsNullOrEmpty(dto.Phone))
+    {
+      throw new Exception("So dien thoai khong duoc de trong");
+    }
+    if (dto.Phone.Length < 3)
+    {
+      throw new Exception("So dien thoai khong hop le");
+    }
+    var isUsedPhone = await _userRepo.IsPhoneExisted(dto.Phone);
+    if (isUsedPhone)
+    {
+      throw new Exception("So dien thoai da duoc su dung");
+    }
     var newCustomer = ConvertDTOToEntity(dto);
     await _userRepo.Create(newCustomer);
     return newCustomer;
@@ -39,6 +60,8 @@ public class CustomerService : ICustomerService
     try
     {
       var customer = await _userRepo.Update(id, dto);
+      if(customer == null)
+        throw new Exception("Khong tim thay nguoi dung");
       return customer;
     }
     catch

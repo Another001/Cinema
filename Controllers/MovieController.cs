@@ -9,10 +9,10 @@ namespace MyApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MockMovieController : ControllerBase
+public class MovieController : ControllerBase
 {
   private readonly IMovieService _useService;
-  public MockMovieController(IMovieService useService)
+  public MovieController(IMovieService useService)
   {
     _useService = useService;
   }
@@ -25,8 +25,15 @@ public class MockMovieController : ControllerBase
   [HttpPost]
   public async Task<ActionResult<MovieMovie>> CreateMovie([FromBody] MovieCreateReqDto dto)
   {
-    var newMovie = await _useService.CreateMovie(dto);
-    return Ok(newMovie);
+    try
+    {
+      var newMovie = await _useService.CreateMovie(dto);
+      return Ok(newMovie);
+    }
+    catch(Exception ex)
+    {
+      return BadRequest(new { message = ex.Message });
+    }
   }
   [HttpPut("{id}")]
   public async Task<ActionResult<MovieMovie>> UpdateMovie([FromRoute] long id, [FromBody] MovieUpdateDto dto)
@@ -38,7 +45,7 @@ public class MockMovieController : ControllerBase
     }
     catch (Exception ex)
     {
-      return BadRequest(ex.Message);
+      return BadRequest(new { message = ex.Message });
     }
   }
 }

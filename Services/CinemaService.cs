@@ -2,6 +2,7 @@ using MyApi.Repositories;
 using MyApi.DTOs;
 using MyApi.Interfaces;
 using MyApi.Models;
+using System.Diagnostics;
 
 namespace MyApi.Services;
 public class CinemaService : ICinemaService
@@ -14,7 +15,10 @@ public class CinemaService : ICinemaService
   public async Task<CinemaGetResDto?> GetCinema(long id)
     {
     var cinema = await _userRepo.GetCinema(id);
-    if (cinema == null) return null;
+    if (cinema == null)
+    {
+      throw new Exception("Khong tim thay rap chieu phim");
+    }
     return new CinemaGetResDto {
         City = cinema.City,
         Address = cinema.Address,
@@ -30,6 +34,14 @@ public class CinemaService : ICinemaService
 
   public async Task<CinemaCinema> CreateCinema(CinemaCreateReqDto dto)
   {
+    if (string.IsNullOrEmpty(dto.City))
+    {
+      throw new Exception("Ten thanh pho khong duoc de trong");
+    }
+    if (string.IsNullOrEmpty(dto.Address))
+    {
+      throw new Exception("Dia chi khong duoc de trong");
+    }
     var newCinema = CinemaConvertDTOToEntity(dto);
     await _userRepo.CreateCinema(newCinema);
     return newCinema;
@@ -40,6 +52,8 @@ public class CinemaService : ICinemaService
     try
     {
       var cinema = await _userRepo.UpdateCinema(id, dto);
+      if(cinema == null)
+        throw new Exception("Khong tim thay rap phim");
       return cinema;
     }
     catch
@@ -50,9 +64,12 @@ public class CinemaService : ICinemaService
 
   //ROOM
   public async Task<CinemaRoom?> GetRoom(long id)
-    {
+  {
     var room = await _userRepo.GetRoom(id);
-    if (room == null) return null;
+    if (room == null)
+    {
+      throw new Exception("Khong tim thay phong chieu");
+    }
     return room;
   }
   public async Task<List<RoomGetResDto>?> ListRoom(RoomFilterDto dto)
@@ -71,6 +88,10 @@ public class CinemaService : ICinemaService
     try
     {
       var room = await _userRepo.UpdateRoom(id, dto);
+      if(room == null)
+      {
+        throw new Exception("Khong tim thay phong chieu");
+      }
       return room;
     }
     catch
