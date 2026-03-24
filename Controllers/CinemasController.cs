@@ -58,7 +58,7 @@ public class CinemasController : ControllerBase
 	}
 
 	//ROOM
-	[HttpGet("room/{id}")]
+	[HttpGet("Room/{id}")]
 	public async Task<IActionResult> GetRoom(long id)
 	{
 		try
@@ -71,13 +71,13 @@ public class CinemasController : ControllerBase
 			return BadRequest(new { message = ex.Message });
 		}
 	}
-	[HttpGet("room")]
+	[HttpGet("Room")]
 	public async Task<IActionResult> ListRoom([FromQuery] RoomFilterDto dto)
 	{
 		var result = await _userService.ListRoom(dto);
 		return Ok(result);
 	}
-	[HttpPost("room")]
+	[HttpPost("Room")]
 	public async Task<ActionResult<CinemaRoom>> CreateRoom([FromBody] RoomCreateReqDto dto)
 	{
 		try
@@ -90,13 +90,67 @@ public class CinemasController : ControllerBase
 			return BadRequest(new { message = ex.Message });
 		}
 	}
-	[HttpPut("room/{id}")]
+	[HttpPut("Room/{id}")]
 	public async Task<ActionResult<CinemaRoom>> UpdateRoom(long id, [FromBody] RoomUpdateReqDto dto)
 	{
 		try
 		{
 			var room = await _userService.UpdateRoom(id, dto);
 			return Ok(room);
+		}
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+
+	//Seat
+	[HttpGet("Room/Seat/{id}")]
+	public async Task<ActionResult<SeatGetResDTO>> GetSeat(long id)
+	{
+		try
+		{
+			var seat = await _userService.GetSeat(id);
+			return Ok(seat);
+		}
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+	[HttpPost("Room/Seat")]
+	public async Task<ActionResult<CinemaSeat>> CreateSeat([FromBody] SeatCreateReqDTO dto)
+	{
+		try
+		{
+			var seat = await _userService.CreateSeat(dto);
+			return Ok(seat);
+		}
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+	[HttpGet("Room/Seat")]
+	public async Task<ActionResult<List<SeatGetResDTO>>> ListSeat([FromQuery] SeatFilterDTO dto)
+	{
+		try
+		{
+			var seat = await _userService.ListSeat(dto);
+			return Ok(seat);
+		}
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+	[HttpPut("Room/Seat/{id}")]
+	public async Task<ActionResult<CinemaSeat>> UpdateSeat(long id, [FromBody] SeatUpdateReqDTO dto)
+	{
+		try
+		{
+			var seat = await _userService.UpdateSeat(id, dto);
+			return Ok(seat);
 		}
 		catch(Exception ex)
 		{

@@ -109,6 +109,72 @@ public class CinemaRepository : ICinemaRepository
     await _context.SaveChangesAsync();
     return room;
   }
+
+  //Seat
+  public async Task<SeatGetResDTO?> GetSeat(long id)
+  {
+    var result = await _context.CinemaSeats
+      .Include(u => u.SeatStatus)
+      .Include(u => u.SeatType)
+      .Include(u => u.Room)
+        .ThenInclude(c => c.Cinema)
+      .FirstOrDefaultAsync(u => u.Id == id && u.DeletedAt == null);
+    if(result == null)
+      return null;
+    return new SeatGetResDTO
+    {
+      Id = result.Id,
+      Name = result.Name,
+      SeatType = result.SeatType.Code,
+      SeatStatus = result.SeatStatus.Code,
+      Cinema = result.Room.Cinema.Address,
+      Room = result.Room.Name
+    };
+  }
+  public async Task<CinemaSeat> CreateSeat(CinemaSeat newSeat)
+  {
+    _context.CinemaSeats.Add(newSeat);
+    await _context.SaveChangesAsync();
+    return newSeat;
+  }
+  public async Task<CinemaSeat?> UpdateSeat(long id, SeatUpdateReqDTO dto)
+  {
+    var seat = await _context.CinemaSeats.FindAsync(id);
+    if(seat == null)
+      return null;
+    seat.Name = dto.Name ?? seat.Name;
+    seat.SeatTypeId = dto.SeatTypeId ?? seat.SeatTypeId;
+    seat.SeatStatusId = dto.SeatStatusId ?? seat.SeatStatusId;
+    seat.UpdatedAt = DateTime.Now;
+    await _context.SaveChangesAsync();
+    return seat;
+  }
+  public async Task<List<SeatGetResDTO>?> ListSeat(SeatFilterDTO dto)
+  {
+    var query = SeatConvertFIlterDTOToFilterEntity(dto);
+    var seats = await (
+      from seat in query
+      join type in _context.CinemaSeatTypes
+      on seat.SeatTypeId equals type.Id
+      join status in _context.CinemaSeatStatuses
+      on seat.SeatStatusId equals status.Id
+      join room in _context.CinemaRooms
+      on seat.RoomId equals room.Id
+      join cinema in _context.CinemaCinemas
+      on room.CinemaId equals cinema.Id
+      where seat.DeletedAt == null
+      select new SeatGetResDTO
+      {
+        Id = seat.Id,
+        Name = seat.Name,
+        SeatType = type.Code,
+        SeatStatus = status.Code,
+        Cinema = cinema.Address,
+        Room = room.Name,
+      }
+    ).ToListAsync();
+    return seats;
+  }
   //Helper
   private IQueryable<CinemaCinema> CinemaConvertFilterDtoToFilterEntity(CinemaFilterDto dto)
   {
@@ -139,6 +205,16 @@ public class CinemaRepository : ICinemaRepository
     {
       query = query.Where(x => x.RoomTypeId == dto.RoomTypeId);
     }    
+    return query;
+  }
+
+  private IQueryable<CinemaSeat> SeatConvertFIlterDTOToFilterEntity(SeatFilterDTO dto)
+  {
+    var query = _context.CinemaSeats.AsQueryable();
+    if (dto.RoomId.HasValue)
+    {
+      query = query.Where(x => x.RoomId == dto.RoomId);
+    }
     return query;
   }
 }

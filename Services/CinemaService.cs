@@ -99,6 +99,37 @@ public class CinemaService : ICinemaService
       throw; 
     }
   }
+
+  //Seat
+  public async Task<SeatGetResDTO?> GetSeat(long id)
+  {
+    var seat = await _userRepo.GetSeat(id);
+    if(seat == null)
+    {
+      throw new Exception("Khong tim thay ghe");
+    }
+    return seat;
+  }
+  public async Task<CinemaSeat?> CreateSeat(SeatCreateReqDTO dto)
+  {
+    var newSeat = SeatConvertDTOToEntity(dto);
+    await _userRepo.CreateSeat(newSeat);
+    return newSeat;
+  } 
+  public async Task<CinemaSeat?> UpdateSeat(long id, SeatUpdateReqDTO dto)
+  {
+    var seat = await _userRepo.UpdateSeat(id, dto);
+    if(seat == null)
+    {
+      throw new Exception("Khong tim thay ghe");
+    }
+    return seat;
+  }
+  public async Task<List<SeatGetResDTO>?> ListSeat(SeatFilterDTO dto)
+  {
+    var seats = await _userRepo.ListSeat(dto);
+    return seats;
+  }
   //Helper
   private CinemaCinema CinemaConvertDTOToEntity(CinemaCreateReqDto dto)
   {
@@ -126,5 +157,20 @@ public class CinemaService : ICinemaService
       RowId = Guid.NewGuid(),
     };
     return room;
+  }
+
+  private CinemaSeat SeatConvertDTOToEntity(SeatCreateReqDTO dto)
+  {
+    var seat = new CinemaSeat
+    {
+      Name = dto.Name,
+      SeatTypeId = dto.SeatTypeId,
+      SeatStatusId = dto.SeatStatusId,
+      RoomId = dto.RoomId,
+      CreatedAt = DateTime.Now,
+      UpdatedAt = DateTime.Now,
+      RowId = Guid.NewGuid()
+    };
+    return seat;
   }
 }

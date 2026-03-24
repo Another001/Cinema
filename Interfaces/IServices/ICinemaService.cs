@@ -13,4 +13,9 @@ public interface ICinemaService : IServiceScoped
   Task<List<RoomGetResDto>?> ListRoom(RoomFilterDto dto);
   Task<CinemaRoom> CreateRoom(RoomCreateReqDto dto);
   Task<CinemaRoom> UpdateRoom(long id, RoomUpdateReqDto dto);
+  //Seat
+  Task<SeatGetResDTO?> GetSeat(long id);
+  Task<CinemaSeat?> CreateSeat(SeatCreateReqDTO dto);
+  Task<List<SeatGetResDTO>?> ListSeat(SeatFilterDTO dto);
+  Task<CinemaSeat?> UpdateSeat(long id, SeatUpdateReqDTO dto);
 }
