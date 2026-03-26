@@ -9,7 +9,7 @@ public partial class BookingSeatPrice
 
     public long ShowtimeId { get; set; }
 
-    public long SeatId { get; set; }
+    public long SeatTypeId { get; set; }
 
     public decimal SeatPrice { get; set; }
 
@@ -23,9 +23,9 @@ public partial class BookingSeatPrice
 
     public Guid RowId { get; set; }
 
-    public virtual CinemaSeat Seat { get; set; } = null!;
-
     public virtual BookingSeatPriceStatus SeatPriceStatus { get; set; } = null!;
+
+    public virtual CinemaSeatType SeatType { get; set; } = null!;
 
     public virtual MovieShowtime Showtime { get; set; } = null!;
 }

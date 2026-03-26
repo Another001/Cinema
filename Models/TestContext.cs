@@ -96,7 +96,6 @@ public partial class TestContext : DbContext
 
             entity.HasIndex(e => new { e.ReservationId, e.SeatId }, "UC_BookingReservationSeat").IsUnique();
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -136,22 +135,24 @@ public partial class TestContext : DbContext
 
             entity.ToTable("BookingSeatPrice", "Booking");
 
-            entity.HasIndex(e => new { e.ShowtimeId, e.SeatId }, "UC_ShowtimeSeatPrice").IsUnique();
+            entity.HasIndex(e => new { e.ShowtimeId, e.SeatTypeId }, "UIX_ShowtimeSeatPrice_Active")
+                .IsUnique()
+                .HasFilter("([DeletedAt] IS NULL)");
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.SeatPrice).HasColumnType("decimal(22, 4)");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Seat).WithMany(p => p.BookingSeatPrices)
-                .HasForeignKey(d => d.SeatId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_MovieShowtime_SeatId");
-
             entity.HasOne(d => d.SeatPriceStatus).WithMany(p => p.BookingSeatPrices)
                 .HasForeignKey(d => d.SeatPriceStatusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_MovieSeatPrice_StatusEnum");
+
+            entity.HasOne(d => d.SeatType).WithMany(p => p.BookingSeatPrices)
+                .HasForeignKey(d => d.SeatTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CinemaSeatType_SeatTypeId");
 
             entity.HasOne(d => d.Showtime).WithMany(p => p.BookingSeatPrices)
                 .HasForeignKey(d => d.ShowtimeId)

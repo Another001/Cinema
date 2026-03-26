@@ -34,35 +34,28 @@ public class MockShowtimeService : IShowtimeService
       throw new Exception("Khong ton tai phim");
     }
     var newShowtime = ConvertDTOToEntity(dto);
-    await _useRepo.CreateShowtime(newShowtime);
+    await _useRepo.CreateShowtime(newShowtime.Showtime, newShowtime.SeatPrices);
     return new ShowtimeGetResDto
     {
-      Id = newShowtime.Id,
-      RoomName = newShowtime.RoomId.ToString(),
-      MovieName = newShowtime.MovieId.ToString(),
-      BeginAt = newShowtime.BeginAt,
-      EndAt = newShowtime.EndAt,
-      CinemaAddress = newShowtime.RoomId.ToString(),
+      Id = newShowtime.Showtime.Id,
+      RoomName = newShowtime.Showtime.RoomId.ToString(),
+      MovieName = newShowtime.Showtime.MovieId.ToString(),
+      BeginAt = newShowtime.Showtime.BeginAt,
+      EndAt = newShowtime.Showtime.EndAt,
+      CinemaAddress = newShowtime.Showtime.RoomId.ToString(),
     };
   }
-  public async Task<MovieShowtime> UpdateShowtime(long id, ShowtimeUpdateReqDto dto)
+  public async Task<ShowtimeGetResDto> UpdateShowtime(long id, ShowtimeUpdateReqDto dto)
   {
-    try
+    var newShowtime = await _useRepo.UpdateShowtime(id, dto);
+    if(newShowtime == null)
     {
-      var newShowtime = await _useRepo.UpdateShowtime(id, dto);
-      if(newShowtime == null)
-      {
-        throw new Exception("Khong tim thay suat chieu");
-      }
-      return newShowtime;
+      throw new Exception("Khong tim thay suat chieu");
     }
-    catch
-    {
-      throw; 
-    }
+    return newShowtime;
   }
   //Helper
-  private MovieShowtime ConvertDTOToEntity(ShowtimeCreateReqDto dto)
+  private ShowtimeConversionResult ConvertDTOToEntity(ShowtimeCreateReqDto dto)
   {
     var newShowtime = new MovieShowtime
     {
@@ -75,6 +68,25 @@ public class MockShowtimeService : IShowtimeService
       UpdatedAt = DateTime.Now,
       RowId = Guid.NewGuid()
     };
-    return newShowtime;
+    List<BookingSeatPrice> newSeatPrice = new List<BookingSeatPrice>();
+    foreach(var price in dto.SeatPrice)
+    {
+      var newPrice = new BookingSeatPrice
+      {
+        SeatTypeId = price.SeatTypeId,
+        SeatPrice = price.Price,
+        SeatPriceStatusId = 1,
+        CreatedAt = DateTime.Now,
+        UpdatedAt = DateTime.Now,
+        RowId = Guid.NewGuid(),
+      };
+      newSeatPrice.Add(newPrice);
+    }
+    var result = new ShowtimeConversionResult
+    {
+      Showtime = newShowtime,
+      SeatPrices = newSeatPrice,
+    };
+    return result;
   }
 }

@@ -34,7 +34,7 @@ public class ShowtimeController : ControllerBase
     }
   }
   [HttpPut("{id}")]
-  public async Task<ActionResult<MovieShowtime>> UpdateShowtime([FromRoute] long id, [FromBody] ShowtimeUpdateReqDto dto)
+  public async Task<ActionResult<ShowtimeGetResDto>> UpdateShowtime([FromRoute] long id, [FromBody] ShowtimeUpdateReqDto dto)
   {
     try
     {

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using MyApi.Models;
 
 namespace MyApi.DTOs
 {
@@ -9,6 +9,17 @@ namespace MyApi.DTOs
     public required DateTime BeginAt{get; set;}
     public required DateTime EndAt {get; set;}
     public long ShowtimeStatusId {get; set;} = 1;
+    public required List<SeatPriceCreateReqDto> SeatPrice{get; set;}
+  }
+  public class SeatPriceCreateReqDto
+  {
+    public required long SeatTypeId{set; get;}
+    public required decimal Price {set; get;}
+  }
+  public class SeatPriceGetResDto
+  {
+    public string SeatType{set; get;} = string.Empty;
+    public decimal Price{set; get;}
   }
   public class ShowtimeGetResDto
   {
@@ -18,6 +29,7 @@ namespace MyApi.DTOs
     public required DateTime BeginAt {get; set;}
     public required DateTime EndAt {get; set;}
     public required string CinemaAddress {get; set;}
+    public List<SeatPriceGetResDto> SeatPrices{set; get;} = [];
   }
   public class ShowtimeFilterDto
   {
@@ -30,5 +42,11 @@ namespace MyApi.DTOs
     public long? ShowtimeStatusId {set; get;}
     public DateTime? BeginAt {set; get;}
     public DateTime? EndAt {set; get;}
+    public List<SeatPriceCreateReqDto>? SeatPrices{set; get;}
+  }
+  public class ShowtimeConversionResult
+  {
+    public MovieShowtime Showtime { get; set; } = null!;
+    public List<BookingSeatPrice> SeatPrices { get; set; } = new();
   }
 }

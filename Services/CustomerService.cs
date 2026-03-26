@@ -1,4 +1,3 @@
-using MyApi.Repositories;
 using MyApi.DTOs;
 using MyApi.Interfaces;
 using MyApi.Models;
@@ -8,7 +7,7 @@ public class CustomerService : ICustomerService
 {
   private readonly ICustomerRepository _userRepo;
 
-  public CustomerService(ICustomerRepository userRepo) => _userRepo = userRepo;
+  public CustomerService(ICustomerRepository userRepo) { _userRepo = userRepo;}
 
   public async Task<CustomerGetResDto?> Get(long id)
     {

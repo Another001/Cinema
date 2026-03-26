@@ -6,5 +6,5 @@ public interface IShowtimeService : IServiceScoped
 {
   Task<List<ShowtimeGetResDto>?> ListShowtime(ShowtimeFilterDto dto);
   Task<ShowtimeGetResDto> CreateShowtime(ShowtimeCreateReqDto dto);
-  Task<MovieShowtime> UpdateShowtime(long id, ShowtimeUpdateReqDto dto);
+  Task<ShowtimeGetResDto> UpdateShowtime(long id, ShowtimeUpdateReqDto dto);
 }

@@ -13,5 +13,7 @@ public partial class CinemaSeatType
 
     public string? Color { get; set; }
 
+    public virtual ICollection<BookingSeatPrice> BookingSeatPrices { get; set; } = new List<BookingSeatPrice>();
+
     public virtual ICollection<CinemaSeat> CinemaSeats { get; set; } = new List<CinemaSeat>();
 }

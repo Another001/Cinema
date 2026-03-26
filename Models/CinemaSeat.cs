@@ -25,8 +25,6 @@ public partial class CinemaSeat
 
     public virtual ICollection<BookingReservationSeat> BookingReservationSeats { get; set; } = new List<BookingReservationSeat>();
 
-    public virtual ICollection<BookingSeatPrice> BookingSeatPrices { get; set; } = new List<BookingSeatPrice>();
-
     public virtual ICollection<BookingTicket> BookingTickets { get; set; } = new List<BookingTicket>();
 
     public virtual CinemaRoom Room { get; set; } = null!;
