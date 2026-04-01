@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using MyApi.DTOs;
 using MyApi.Interfaces;
 using MyApi.Models;
@@ -67,6 +68,16 @@ public class CustomerService : ICustomerService
     {
       throw; 
     }
+  }
+
+  public async Task<CustomerFakeLoginResDto?> FakeLogin(CustomerFakeLoginReqDto dto)
+  {
+    var customer = await _userRepo.FakeLogin(dto);
+    if(customer == null)
+    {
+      throw new Exception("Khong tim thay nguoi dung");
+    }
+    return customer;
   }
   //Helper
   private UserCustomer ConvertDTOToEntity(CustomerCreateReqDto dto)

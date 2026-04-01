@@ -52,6 +52,20 @@ public class CustomerRepository : ICustomerRepository
     return customer;
   }
 
+  public async Task<CustomerFakeLoginResDto?> FakeLogin(CustomerFakeLoginReqDto dto)
+  {
+    var customer = await _context.UserCustomers
+      .Where(x => x.Phone == dto.Phone && x.DeletedAt == null)
+      .Select(x => new CustomerFakeLoginResDto
+      {
+        Id = x.Id,
+        Name = x.Name,
+        Phone = x.Phone,
+      })
+      .FirstOrDefaultAsync();
+    return customer;
+  }
+
   //Validate function
   public async Task<bool> IsPhoneExisted(string phone)
   {

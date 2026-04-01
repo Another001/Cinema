@@ -8,4 +8,5 @@ public interface ICustomerService : IServiceScoped
     Task<List<CustomerGetResDto>?> List(CustomerFilterDto dto);
     Task<UserCustomer> Create(CustomerCreateReqDto dto);
     Task<UserCustomer> Update(long id, CustomerUpdateReqDto dto);
+    Task<CustomerFakeLoginResDto?> FakeLogin(CustomerFakeLoginReqDto dto);
 }

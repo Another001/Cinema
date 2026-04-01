@@ -1,18 +1,30 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MyApi.DTOs
 {
+  public class CustomerFakeLoginReqDto
+  {
+    public required string Phone{set; get;}
+  }
+  public class CustomerFakeLoginResDto
+  {
+    public required long Id{set; get;}
+    public required string Name{set; get;}
+    public required string Phone{set; get;}
+  }
   public class CustomerCreateReqDto
   {
-      public required string Name { get; set; }
-      public required string Phone { get; set; }
-      public required string Email { get; set; } = null!;
-      public long UserStatusId { get; set; } = 1;
+    public required string Name { get; set; }
+    public required string Phone { get; set; }
+    public required string Email { get; set; } = null!;
+    public long UserStatusId { get; set; } = 1;
   }
   public class CustomerGetResDto
   {
-  public string Name {get; set;} = string.Empty;
-  public string Phone {get; set;} = string.Empty;
-  public string Email {get; set;} = string.Empty;
-  public string? Status {get; set;}
+    public string Name {get; set;} = string.Empty;
+    public string Phone {get; set;} = string.Empty;
+    public string Email {get; set;} = string.Empty;
+    public string? Status {get; set;}
   }
   public class CustomerFilterDto
   {

@@ -12,6 +12,20 @@ public class CustomerController : ControllerBase
 	private readonly ICustomerService _userService;
 	public CustomerController(ICustomerService userService) => _userService = userService;
 
+	[HttpPost("login")]
+	public async Task<ActionResult<CustomerFakeLoginResDto?>> FakeLogin([FromBody] CustomerFakeLoginReqDto dto)
+	{
+		try
+		{
+			var customer = await _userService.FakeLogin(dto);
+			return customer;
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+
 	[HttpGet("{id}")]
 	public async Task<IActionResult> Get(long id)
 	{

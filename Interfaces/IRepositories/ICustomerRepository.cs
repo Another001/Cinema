@@ -8,6 +8,7 @@ public interface ICustomerRepository
   Task<List<CustomerGetResDto>?> List(CustomerFilterDto query);
   Task<UserCustomer> Create(UserCustomer newCustomer);
   Task<UserCustomer?> Update(long id,  CustomerUpdateReqDto dto);
+  Task<CustomerFakeLoginResDto?> FakeLogin(CustomerFakeLoginReqDto dto);
   //Validator
   Task<bool> IsPhoneExisted(string phone);
 }
