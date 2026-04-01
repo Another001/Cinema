@@ -27,6 +27,22 @@ public partial class MovieMovie
 
     public long MovieStatusId { get; set; }
 
+    public DateTime ReleaseDate { get; set; }
+
+    public DateTime EndDate { get; set; }
+
+    public string Genre { get; set; } = null!;
+
+    public string Director { get; set; } = null!;
+
+    public string Cast { get; set; } = null!;
+
+    public string Figure { get; set; } = null!;
+
+    public string? Language { get; set; }
+
+    public string? Trailer { get; set; }
+
     public virtual ICollection<MovieShowtime> MovieShowtimes { get; set; } = new List<MovieShowtime>();
 
     public virtual MovieMovieStatus MovieStatus { get; set; } = null!;

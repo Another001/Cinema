@@ -61,7 +61,7 @@ public partial class TestContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-76A1KAF\\SQLEXPRESS;Database=test;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-76A1KAF\\SQLEXPRESS;Database=test;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -228,12 +228,8 @@ public partial class TestContext : DbContext
 
             entity.HasIndex(e => e.Address, "UC_Cinema_Address").IsUnique();
 
-            entity.Property(e => e.Address)
-                .HasMaxLength(400)
-                .IsUnicode(false);
-            entity.Property(e => e.City)
-                .HasMaxLength(400)
-                .IsUnicode(false);
+            entity.Property(e => e.Address).HasMaxLength(400);
+            entity.Property(e => e.City).HasMaxLength(400);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -269,9 +265,7 @@ public partial class TestContext : DbContext
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Name)
-                .HasMaxLength(400)
-                .IsUnicode(false);
+            entity.Property(e => e.Name).HasMaxLength(400);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Cinema).WithMany(p => p.CinemaRooms)
@@ -331,9 +325,7 @@ public partial class TestContext : DbContext
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Name)
-                .HasMaxLength(400)
-                .IsUnicode(false);
+            entity.Property(e => e.Name).HasMaxLength(400);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Room).WithMany(p => p.CinemaSeats)
@@ -392,17 +384,21 @@ public partial class TestContext : DbContext
         {
             entity.ToTable("MovieMovie", "Movie");
 
+            entity.Property(e => e.Cast).HasMaxLength(400);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Describe)
+            entity.Property(e => e.Describe).HasMaxLength(4000);
+            entity.Property(e => e.Director).HasMaxLength(400);
+            entity.Property(e => e.EndDate).HasColumnType("datetime");
+            entity.Property(e => e.Figure)
                 .HasMaxLength(400)
                 .IsUnicode(false);
-            entity.Property(e => e.Name)
-                .HasMaxLength(400)
-                .IsUnicode(false);
-            entity.Property(e => e.Title)
-                .HasMaxLength(400)
-                .IsUnicode(false);
+            entity.Property(e => e.Genre).HasMaxLength(400);
+            entity.Property(e => e.Language).HasMaxLength(400);
+            entity.Property(e => e.Name).HasMaxLength(400);
+            entity.Property(e => e.ReleaseDate).HasColumnType("datetime");
+            entity.Property(e => e.Title).HasMaxLength(400);
+            entity.Property(e => e.Trailer).HasMaxLength(400);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.MovieStatus).WithMany(p => p.MovieMovies)

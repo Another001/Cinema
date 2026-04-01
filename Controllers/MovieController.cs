@@ -16,10 +16,28 @@ public class MovieController : ControllerBase
   {
     _useService = useService;
   }
+  [HttpGet("{id}")]
+  public async Task<MovieGetResDto?> GetMovie([FromRoute] long id)
+  {
+    var movie = await _useService.GetMovie(id);
+    return movie;
+  }
   [HttpGet]
-  public async Task<ActionResult<List<MovieGetResDto>>> ListMovie([FromQuery] MovieFilterDto dto)
+  public async Task<ActionResult<List<MovieListResDto>>> ListMovie([FromQuery] MovieFilterDto dto)
   {
     var movies = await _useService.ListMovie(dto);
+    return Ok(movies);
+  }
+  [HttpGet("Now")]
+  public async Task<ActionResult<List<MovieListResDto>>> ListMovieNow()
+  {
+    var movies = await _useService.ListMovieNow();
+    return Ok(movies);
+  }
+  [HttpGet("Upcoming")]
+  public async Task<ActionResult<List<MovieListResDto>>> ListMovieUpcoming()
+  {
+    var movies = await _useService.ListMovieUpcoming();
     return Ok(movies);
   }
   [HttpPost]

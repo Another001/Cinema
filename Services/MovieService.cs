@@ -1,3 +1,4 @@
+
 using MyApi.DTOs;
 using MyApi.Interfaces;
 using MyApi.Models;
@@ -11,9 +12,24 @@ public class MockMovieService : IMovieService
   {
     _useRepo = useRepo;
   }
-  public async Task<List<MovieGetResDto>?> ListMovie(MovieFilterDto dto)
+  public async Task<MovieGetResDto?> GetMovie(long id)
+  {
+    var movie = await _useRepo.GetMovie(id);
+    return movie;
+  }
+  public async Task<List<MovieListResDto>> ListMovie(MovieFilterDto dto)
   {
     var movies = await _useRepo.ListMovie(dto);
+    return movies;
+  }
+  public async Task<List<MovieListResDto>> ListMovieNow()
+  {
+    var movies = await _useRepo.ListMovieNow();
+    return movies;
+  }
+  public async Task<List<MovieListResDto>> ListMovieUpcoming()
+  {
+    var movies = await _useRepo.ListMovieUpcoming();
     return movies;
   }
   public async Task<MovieMovie> CreateMovie(MovieCreateReqDto dto)
@@ -51,7 +67,15 @@ public class MockMovieService : IMovieService
       Title = dto.Title,
       Describe = dto.Describe,
       MovieStatusId = 1,
+      ReleaseDate = dto.ReleaseDate,
+      EndDate = dto.EndDate,
+      Genre = dto.Genre,
+      Director = dto.Director,
+      Cast = dto.Cast,
       Used = true,
+      Figure = dto.Figure,
+      Trailer = dto.Trailer,
+      Language = dto.Language,
       Duration = dto.Duration,
       CreatedAt = DateTime.Now,
       UpdatedAt = DateTime.Now,

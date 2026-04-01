@@ -4,8 +4,10 @@ using MyApi.DTOs;
 namespace MyApi.Interfaces;
 public interface IMovieRepository
 {
-  Task<MovieMovie?> GetMovie(long id);
-  Task<List<MovieGetResDto>> ListMovie(MovieFilterDto dto);
+  Task<MovieGetResDto?> GetMovie(long id);
+  Task<List<MovieListResDto>> ListMovie(MovieFilterDto dto);
+  Task<List<MovieListResDto>> ListMovieNow();
+  Task<List<MovieListResDto>> ListMovieUpcoming();
   Task<MovieMovie> CreateMovie(MovieMovie dto);
   Task<MovieMovie?> UpdateMovie(long id, MovieUpdateDto dto);
 }

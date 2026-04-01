@@ -15,6 +15,13 @@ builder.Services.AddControllers()
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     options.JsonSerializerOptions.WriteIndented = true; 
   });
+builder.Services.AddCors(options => {
+  options.AddPolicy("AllowReactApp",
+    policy => policy.WithOrigins("http://localhost:3000")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+});
+
 // 2. Đăng ký Repository
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
@@ -42,6 +49,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 

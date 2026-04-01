@@ -12,14 +12,66 @@ public class MovieRepository : IMovieRepository
   {
     _context = context;
   }
-  public async Task<MovieMovie?> GetMovie(long id)
+  public async Task<MovieGetResDto?> GetMovie(long id)
   {
     var movie = await
       _context.MovieMovies
-      .FirstOrDefaultAsync(x => x.Id == id && x.DeletedAt == null);
+      .Where(x => x.Id == id && x.DeletedAt == null)
+      .Select(x => new MovieGetResDto
+      {
+        Id = x.Id,
+        Name = x.Name,
+        Describe = x.Describe ?? "",
+        Title = x.Title,
+        Duration = x.Duration,
+        Genre = x.Genre,
+        Cast = x.Cast,
+        Director = x.Director,
+        ReleaseDate = x.ReleaseDate,
+        Figure = x.Figure,
+        Language = x.Language ?? "",
+        Trailer = x.Trailer?? "",
+      })
+      .FirstOrDefaultAsync();
     return movie;
   }
-  public async Task<List<MovieGetResDto>> ListMovie(MovieFilterDto dto)
+  public async Task<List<MovieListResDto>> ListMovieNow()
+  {
+    var now = DateTime.Now;
+    var movies = await
+      _context.MovieMovies
+      .Where(x => x.ReleaseDate <= now && x.EndDate >= now)
+      .Select(x => new MovieListResDto
+      {
+        Id = x.Id,
+        Name = x.Name,
+        Duration = x.Duration,
+        Genre = x.Genre,
+        ReleaseDate = x.ReleaseDate,
+        Figure = x.Figure
+      })
+      .ToListAsync();
+    return movies;
+  }
+    public async Task<List<MovieListResDto>> ListMovieUpcoming()
+  {
+    var now = DateTime.Now;
+    var movies = await
+      _context.MovieMovies
+      .Where(x => x.ReleaseDate >= now)
+      .Select(x => new MovieListResDto
+      {
+        Id = x.Id,
+        Name = x.Name,
+        Duration = x.Duration,
+        Genre = x.Genre,
+        ReleaseDate = x.ReleaseDate,
+        Figure = x.Figure
+      })
+      .ToListAsync();
+    return movies;
+  }
+  public async Task<List<MovieListResDto>> ListMovie(MovieFilterDto dto)
   {
     var query = ConvertFilterDTOToFilterEntity(dto);
     var movies =
@@ -27,13 +79,14 @@ public class MovieRepository : IMovieRepository
         from movie in query
         join status in _context.MovieMovieStatuses
         on movie.MovieStatusId equals status.Id
-        select new MovieGetResDto
+        select new MovieListResDto
         {
           Id = movie.Id,
           Name = movie.Name,
-          Title = movie.Title,
           Duration = movie.Duration,
-          MovieStatus = status.Code
+          Genre = movie.Genre,
+          ReleaseDate = movie.ReleaseDate,
+          Figure = movie.Figure
         }
       ).ToListAsync();
     return movies;
@@ -71,6 +124,13 @@ public class MovieRepository : IMovieRepository
     {
       movie.MovieStatusId = dto.MovieStatusId.Value;
     }
+    movie.ReleaseDate = dto.ReleaseDate ?? movie.ReleaseDate;
+    movie.Cast = dto.Cast ?? movie.Cast;
+    movie.EndDate = dto.EndDate ?? movie.EndDate;
+    movie.Director = dto.Director ?? movie.Director;
+    movie.Genre = dto.Genre ?? movie.Genre;
+    movie.Language = dto.Language ?? movie.Language;
+    movie.Trailer = dto.Trailer ?? movie.Trailer;
     movie.UpdatedAt = DateTime.Now;
     _context.Entry(movie).State = EntityState.Modified;
     await _context.SaveChangesAsync();
@@ -82,7 +142,7 @@ public class MovieRepository : IMovieRepository
     var query = _context.MovieMovies.AsQueryable();
     if (!string.IsNullOrEmpty(dto.Name))
     {
-      query = query.Where(x => x.Name == dto.Name);
+      query = query.Where(x => x.Name.Contains(dto.Name));
     }
     if (dto.Duration.HasValue)
     {
