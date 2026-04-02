@@ -34,36 +34,36 @@ public class ShowtimeRepository : IShowtimeRepository
       }).FirstOrDefaultAsync();
     return showtime;
   }
-  public async Task<List<ShowtimeGetResDto>> ListShowtime(ShowtimeFilterDto dto)
+  public async Task<List<CityGroupResDto>> ListShowtime(ShowtimeFilterDto dto)
   {
     var query = ConvertFilterDTOToFilterEntity(dto);
-    var showtimes =
-      await(
-        from showtime in query
-        join room in _context.CinemaRooms
-        on showtime.RoomId equals room.Id
-        join movie in _context.MovieMovies
-        on showtime.MovieId equals movie.Id
-        join cinema in _context.CinemaCinemas
-        on room.CinemaId equals cinema.Id
-        select new ShowtimeGetResDto
-        {
-          Id = showtime.Id,
-          MovieName = movie.Name,
-          RoomName = room.Name,
-          BeginAt = showtime.BeginAt,
-          EndAt = showtime.EndAt,
-          CinemaAddress = cinema.Address,
-          SeatPrices = _context.BookingSeatPrices
-            .Where(p => p.ShowtimeId == showtime.Id && p.DeletedAt == null)
-            .Select(p => new SeatPriceGetResDto
+    var result = await query
+      .GroupBy(s => s.Room.Cinema.City)
+      .Select(cityGroup => new CityGroupResDto
+      {
+        CityName = cityGroup.Key, 
+        Cinemas = cityGroup
+          .GroupBy(s => new { s.Room.Cinema.City, s.Room.Cinema.Address })
+          .Select(cinemaGroup => new CinemaGroupResDto
+          {
+            CinemaName = cinemaGroup.Key.City,
+            CinemaAddress = cinemaGroup.Key.Address,
+            Showtimes = cinemaGroup.Select(s => new ShowtimeDetailDto
             {
-              SeatType = p.SeatType.Code, 
-              Price = p.SeatPrice
-            }).ToList()
-        }
-      ).ToListAsync();
-    return showtimes;
+              Id = s.Id,
+              MovieName = s.Movie.Name,
+              RoomName = s.Room.Name,
+              BeginAt = s.BeginAt,
+              EndAt = s.EndAt
+            })
+            .OrderBy(s => s.BeginAt)
+            .ToList()
+          })
+          .ToList()
+      })
+      .ToListAsync();
+
+    return result;
   }
   public async Task<MovieShowtime> CreateShowtime(MovieShowtime newShowtime, List<BookingSeatPrice> newSeatPrice)
   {
@@ -122,6 +122,20 @@ public class ShowtimeRepository : IShowtimeRepository
     {
       query = query.Where(x => x.MovieId == dto.MovieId);
     }
+    if(dto.BeginAt != null)
+    {
+      query = query.Where(x => x.BeginAt.Date == dto.BeginAt);
+    }
     return query;
   }
 }
+
+
+
+/*          SeatPrices = _context.BookingSeatPrices
+            .Where(p => p.ShowtimeId == showtime.Id && p.DeletedAt == null)
+            .Select(p => new SeatPriceGetResDto
+            {
+              SeatType = p.SeatType.Code, 
+              Price = p.SeatPrice
+            }).ToList()*/

@@ -31,9 +31,43 @@ namespace MyApi.DTOs
     public required string CinemaAddress {get; set;}
     public List<SeatPriceGetResDto> SeatPrices{set; get;} = [];
   }
+  public class ShowtimeListResDto
+  {
+    public required long Id {set; get;}
+    public required string RoomName {get; set;}
+    public required string MovieName {get; set;}
+    public required DateTime BeginAt {get; set;}
+    public required DateTime EndAt {get; set;}
+    public required string CinemaAddress {get; set;}
+    public required string City{set; get;}
+  }
+  public class CityGroupResDto
+  {
+    public string? movieName {set; get;}
+    public string? CityName { get; set; }
+    public List<CinemaGroupResDto>? Cinemas { get; set; }
+}
+
+  public class CinemaGroupResDto
+  {
+      public string? CinemaName { get; set; }
+      public string? CinemaAddress { get; set; }
+      public List<ShowtimeDetailDto>? Showtimes { get; set; }
+  }
+
+  public class ShowtimeDetailDto
+  {
+      public long Id { get; set; }
+      public string? MovieName { get; set; }
+      public string? RoomName { get; set; }
+      public DateTime BeginAt { get; set; }
+      public DateTime EndAt { get; set; }
+  }
   public class ShowtimeFilterDto
   {
     public long? MovieId {get; set;}
+    public string? City {set; get;}
+    public DateTime? BeginAt{set; get;}
   }
   public class ShowtimeUpdateReqDto
   {

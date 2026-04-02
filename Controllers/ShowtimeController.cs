@@ -14,8 +14,14 @@ public class ShowtimeController : ControllerBase
   {
     _useService = useService;
   }
+  [HttpGet("{id}")]
+  public async Task<ActionResult<ShowtimeGetResDto?>> GetShowtime([FromRoute] long id)
+  {
+    var showtime = await _useService.GetShowtime(id);
+    return Ok(showtime);
+  }
   [HttpGet]
-  public async Task<ActionResult<List<ShowtimeGetResDto>>> ListShowtime([FromQuery] ShowtimeFilterDto dto)
+  public async Task<ActionResult<List<CityGroupResDto>>> ListShowtime([FromQuery] ShowtimeFilterDto dto)
   {
     var showtimes = await _useService.ListShowtime(dto);
     return Ok(showtimes);

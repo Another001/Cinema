@@ -104,6 +104,7 @@ public class BookingRepository : IBookingRepository
     .Where(r => r.Id == id)
     .Select(r => new BookingReservationGetDTO
     {
+        Id = r.Id,
         MovieName = r.Showtime.Movie.Name,
         RoomName = r.Showtime.Room.Name,
         CustomerName = r.Customer.Name,

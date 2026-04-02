@@ -21,6 +21,7 @@ public class BookingReservationCreateDTO
 
 public class BookingReservationGetDTO
 {
+  public long Id{set; get;}
   public string? MovieName{set; get;}
   public string? RoomName{set; get;}
   public List<ShowtimeSeatGetResDTO>? Seats{set; get;}

@@ -16,7 +16,12 @@ public class MockShowtimeService : IShowtimeService
     _useRepoCinema = useRepoCinema;
     _useRepoMovie = useRepoMovie;
   }
-  public async Task<List<ShowtimeGetResDto>?> ListShowtime(ShowtimeFilterDto dto)
+  public async Task<ShowtimeGetResDto?> GetShowtime(long id)
+  {
+    var showtime = await _useRepo.GetShowtime(id);
+    return showtime;
+  }
+  public async Task<List<CityGroupResDto>?> ListShowtime(ShowtimeFilterDto dto)
   {
     var showtimes = await _useRepo.ListShowtime(dto);
     return showtimes;
