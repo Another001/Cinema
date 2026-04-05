@@ -43,7 +43,7 @@ public class BookingRepository : IBookingRepository
       seats.Add(seat.SeatId);
     }
     bool isSeatNotEmpty = await _context.BookingReservationSeats.AsNoTracking()
-      .Where(x => x.Reservation.ShowtimeId == dto.ShowtimeId && x.DeletedAt == null)
+      .Where(x => x.Reservation.ShowtimeId == dto.ShowtimeId && x.DeletedAt == null && x.Reservation.ExpiredAt > now)
       .AnyAsync(x => seats.Contains(x.SeatId));
     if (isSeatNotEmpty)
     {
@@ -122,84 +122,82 @@ public class BookingRepository : IBookingRepository
   }
   public async Task<List<TicketGetResDTO>> ConfirmReservation(long id)
   {
-    var now = DateTime.Now;
-    var reservation = await _context.BookingReservations.FindAsync(id);
-    if(reservation == null)
+    // 1. Dùng UtcNow nếu DB lưu chuẩn UTC, hoặc giữ .Now nếu DB lưu giờ Local
+    var now = DateTime.Now; 
+
+    var reservation = await _context.BookingReservations
+        .FirstOrDefaultAsync(r => r.Id == id && r.DeletedAt == null);
+
+    if (reservation == null)
     {
-      throw new Exception("Khong tim thay thong tin dat cho");
+        throw new Exception("Khong tim thay thong tin dat cho");
     }
+
+    // 2. Kiểm tra xem chính reservation này đã hết hạn chưa
+    if (reservation.ExpiredAt < now)
+    {
+        throw new Exception("Thoi gian giu cho da het han, vui long dat lai");
+    }
+
+    // 3. Lấy danh sách SeatId của đơn hàng này
     var reservationSeats = await _context.BookingReservationSeats
-      .Where(x => x.DeletedAt == null && x.ReservationId == id)
-      .Select(x => x.SeatId)
-      .ToListAsync();
-{/*    var isBooked = await (
-      from ticket in _context.BookingTickets
-      where ticket.DeletedAt == null
-        && ticket.ShowtimeId == reservation.ShowtimeId
-        && reservationSeats.Contains(ticket.SeatId)
-      select ticket
-    )
-    var isBookedd = await(
-      from seat in _context.BookingReservationSeats
-      join reser in _context.BookingReservations
-      on seat.Reservation.ShowtimeId equals reser.ShowtimeId
-      where reser.ShowtimeId == reservation.ShowtimeId
-        && reser.DeletedAt == null
-        && reser.ExpiredAt > now
-        && reservationSeats.Contains(seat.SeatId)
-      select seat
-    )
-    */}
-    var isBooked = await _context.CinemaSeats
-    .Where(s => reservationSeats.Contains(s.Id))
-    .AnyAsync(s => 
-      _context.BookingReservationSeats.Any(rs => rs.SeatId == s.Id && rs.Reservation.ShowtimeId == reservation.ShowtimeId && rs.Reservation.ExpiredAt > now) ||
-      _context.BookingTickets.Any(t => t.SeatId == s.Id && t.ShowtimeId == reservation.ShowtimeId)
-    );
-    if (isBooked)
+        .Where(x => x.ReservationId == id && x.DeletedAt == null)
+        .Select(x => x.SeatId)
+        .ToListAsync();
+
+    // 4. Kiểm tra xem có ai khác đã thanh toán hoặc đang giữ chỗ "còn hạn" không
+    // Tách riêng 2 điều kiện cho rõ ràng và nhanh hơn
+    
+    // Check xem có ai đang giữ chỗ (Reservation) mà chưa hết hạn không
+    var hasOtherActiveReservation = await _context.BookingReservationSeats
+        .AnyAsync(rs => 
+            reservationSeats.Contains(rs.SeatId) 
+            && rs.ReservationId != id 
+            && rs.Reservation.ShowtimeId == reservation.ShowtimeId
+            && rs.Reservation.ExpiredAt > now // Chỉ tính những thằng CÒN HẠN
+            && rs.Reservation.DeletedAt == null // Đảm bảo không tính hàng đã xóa
+            && rs.DeletedAt == null);
+
+    // Check xem có ai đã xuất vé (Ticket) thật sự chưa
+    var hasTicket = await _context.BookingTickets
+        .AnyAsync(t => 
+            reservationSeats.Contains(t.SeatId) 
+            && t.ShowtimeId == reservation.ShowtimeId
+            && t.DeletedAt == null); // Nếu bạn có dùng Soft Delete cho Ticket
+
+    if (hasOtherActiveReservation || hasTicket)
     {
-      throw new Exception("Ghe da duoc dat, khong the dat vao");
+        throw new Exception("Ghe da duoc nguoi khac dat hoac dang trong qua trinh thanh toan");
     }
-    var dtickets = await (
-      from bookingseat in _context.BookingReservationSeats
-//      join bookingseat in _context.BookingReservationSeats
-//      on bookingreservation.Id equals bookingseat.ReservationId
-      where bookingseat.ReservationId == reservation.Id
-      select new TicketCreateReqDTO
-      {
-        ShowtimeId = reservation.ShowtimeId,
-        SeatId = bookingseat.SeatId,
-      }).ToListAsync();
-Console.WriteLine("Dữ liệu tickets: " + JsonSerializer.Serialize(dtickets, new JsonSerializerOptions { WriteIndented = true }));
-    var tickets = new List<BookingTicket>();
-    foreach(var dticket in dtickets)
+
+    // 5. Tiến hành tạo vé (giữ nguyên logic của bạn nhưng tối ưu hóa)
+    var tickets = reservationSeats.Select(seatId => new BookingTicket
     {
-      tickets.Add(new BookingTicket
-      {
-        ShowtimeId = dticket.ShowtimeId,
-        SeatId = dticket.SeatId,
+        ShowtimeId = reservation.ShowtimeId,
+        SeatId = seatId,
         CreatedAt = now,
         UpdatedAt = now,
         TicketStatusId = 1,
         RowId = Guid.NewGuid()
-      });
-    }
+    }).ToList();
+
     _context.BookingTickets.AddRange(tickets);
+    
+    // Đánh dấu reservation này là đã hoàn tất (tùy logic của bạn, thường là xóa hoặc update status)
+    // reservation.DeletedAt = now; 
+
     try
     {
         await _context.SaveChangesAsync();
     }
     catch (DbUpdateException ex)
     {
-        // Đây là dòng quan trọng nhất để biết lỗi tại SQL hay tại Code
         var innerException = ex.InnerException?.Message;
-        throw new Exception($"Lỗi database thật sự là: {innerException}");
+        throw new Exception($"Lỗi database: {innerException}");
     }
-    var ticketIds = new List<long>();
-    foreach(var ticket in tickets)
-    {
-      ticketIds.Add(ticket.Id);
-    }
+
+    // 6. Trả về kết quả (Dùng Include để tránh n+1 query)
+    var ticketIds = tickets.Select(t => t.Id).ToList();
     var result = await _context.BookingTickets
       .Where(x => ticketIds.Contains(x.Id))
       .Select(x => new TicketGetResDTO
@@ -211,6 +209,21 @@ Console.WriteLine("Dữ liệu tickets: " + JsonSerializer.Serialize(dtickets, n
         CreatedAt = x.CreatedAt,
         TicketSatus = x.TicketStatus.Code,
       }).ToListAsync();
+
     return result;
+  }
+  public async Task<List<TicketGetResDTO>> ListTicketByUser(long id)
+  {
+    var Tickets = await _context.BookingTickets
+      .Where(x => x.CustomerId == id && x.DeletedAt == null)
+      .Select(x => new TicketGetResDTO
+      {
+        MovieName = x.Showtime.Movie.Name,
+        Address = x.Showtime.Room.Cinema.Address,
+        SeatName = x.Seat.Name,
+        RoomName = x.Showtime.Room.Name,
+        CreatedAt = x.CreatedAt
+      }).ToListAsync();
+    return Tickets;
   }
 }

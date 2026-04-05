@@ -8,4 +8,5 @@ public interface IBookingService
   public Task<BookingReservationGetDTO> CreateReservation(BookingReservationCreateDTO dto);
   public Task<BookingReservationGetDTO> GetReservation(long id);
   public Task<List<TicketGetResDTO>> ConfirmReservation(long id);
+  public Task<List<TicketGetResDTO>> ListTicketByUser(long id);
 }

@@ -32,4 +32,9 @@ public class BookingService : IBookingService
   {
     return await _useRepo.ConfirmReservation(id);
   }
+  public async Task<List<TicketGetResDTO>> ListTicketByUser(long id)
+  {
+    return await _useRepo.ListTicketByUser(id);
+  }
+  
 }

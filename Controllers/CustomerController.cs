@@ -10,8 +10,12 @@ namespace MyApi.Controllers;
 public class CustomerController : ControllerBase
 {
 	private readonly ICustomerService _userService;
-	public CustomerController(ICustomerService userService) => _userService = userService;
-
+	private readonly IBookingService _useBookingService;
+	public CustomerController(ICustomerService userService, IBookingService useBookingService)
+	{
+		_userService = userService;
+		_useBookingService = useBookingService;
+	}
 	[HttpPost("login")]
 	public async Task<ActionResult<CustomerFakeLoginResDto?>> FakeLogin([FromBody] CustomerFakeLoginReqDto dto)
 	{
@@ -67,6 +71,19 @@ public class CustomerController : ControllerBase
 		{
 			var customer = await _userService.Update(id, dto);
 			return Ok(customer);
+		}
+		catch(Exception ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+	}
+	[HttpGet("UserTickets/{id}")]
+	public async Task<ActionResult<UserCustomer>> ListTicketsById(long id)
+	{
+		try
+		{
+			var tickets = await _useBookingService.ListTicketByUser(id);
+			return Ok(tickets);
 		}
 		catch(Exception ex)
 		{
