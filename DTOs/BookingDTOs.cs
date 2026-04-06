@@ -43,7 +43,6 @@ public class TicketGetResDTO
 
 public class TicketCreateReqDTO
 {
-  public required long ShowtimeId{set; get;}
-  public required long SeatId{set; get;}
+  public required long ReservationId{set; get;}
   public long TicketStatusId{set; get;} = 1;
 }

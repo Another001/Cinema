@@ -7,7 +7,7 @@ public partial class BookingTicket
 {
     public long Id { get; set; }
 
-    public long ShowtimeId { get; set; }
+    public long ReservationId { get; set; }
 
     public long SeatId { get; set; }
 
@@ -21,11 +21,9 @@ public partial class BookingTicket
 
     public Guid RowId { get; set; }
 
-    public int CustomerId { get; set; }
+    public virtual BookingReservation Reservation { get; set; } = null!;
 
     public virtual CinemaSeat Seat { get; set; } = null!;
-
-    public virtual MovieShowtime Showtime { get; set; } = null!;
 
     public virtual BookingTicketStatus TicketStatus { get; set; } = null!;
 }

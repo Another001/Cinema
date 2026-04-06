@@ -29,8 +29,6 @@ public partial class MovieShowtime
 
     public virtual ICollection<BookingSeatPrice> BookingSeatPrices { get; set; } = new List<BookingSeatPrice>();
 
-    public virtual ICollection<BookingTicket> BookingTickets { get; set; } = new List<BookingTicket>();
-
     public virtual MovieMovie Movie { get; set; } = null!;
 
     public virtual CinemaRoom Room { get; set; } = null!;

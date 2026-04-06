@@ -182,21 +182,21 @@ public partial class TestContext : DbContext
         {
             entity.ToTable("BookingTicket", "Booking");
 
-            entity.HasIndex(e => new { e.ShowtimeId, e.SeatId }, "UC_BookingTicket").IsUnique();
+            entity.HasIndex(e => new { e.ReservationId, e.SeatId }, "UC_BookingTicket").IsUnique();
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+            entity.HasOne(d => d.Reservation).WithMany(p => p.BookingTickets)
+                .HasForeignKey(d => d.ReservationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BookingTicket_ShowtimeId");
+
             entity.HasOne(d => d.Seat).WithMany(p => p.BookingTickets)
                 .HasForeignKey(d => d.SeatId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_BookingTicket_CinemaSeat");
-
-            entity.HasOne(d => d.Showtime).WithMany(p => p.BookingTickets)
-                .HasForeignKey(d => d.ShowtimeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_BookingTicket_ShowtimeId");
 
             entity.HasOne(d => d.TicketStatus).WithMany(p => p.BookingTickets)
                 .HasForeignKey(d => d.TicketStatusId)

@@ -28,9 +28,9 @@ public class BookingService : IBookingService
       throw new Exception("ko co thong tin dat ghe");
     return result;
   }
-  public async Task<List<TicketGetResDTO>> ConfirmReservation(long id)
+  public async Task<List<TicketGetResDTO>> ConfirmReservation(long reservationId)
   {
-    return await _useRepo.ConfirmReservation(id);
+    return await _useRepo.ConfirmReservation(reservationId);
   }
   public async Task<List<TicketGetResDTO>> ListTicketByUser(long id)
   {

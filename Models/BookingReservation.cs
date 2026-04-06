@@ -27,6 +27,8 @@ public partial class BookingReservation
 
     public virtual ICollection<BookingReservationSeat> BookingReservationSeats { get; set; } = new List<BookingReservationSeat>();
 
+    public virtual ICollection<BookingTicket> BookingTickets { get; set; } = new List<BookingTicket>();
+
     public virtual UserCustomer Customer { get; set; } = null!;
 
     public virtual BookingReservationStatus ReservationStatus { get; set; } = null!;

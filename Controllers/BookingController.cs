@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using MyApi.Models; 
 using MyApi.DTOs;
 using MyApi.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MyApi.Controllers;
 [Controller]
@@ -46,12 +44,12 @@ public class BookingController : ControllerBase
 			return BadRequest(new { message = ex.Message });
 		}
   }
-  [HttpGet("Confirm/{id}")]
-  public async Task<ActionResult<TicketGetResDTO>> ConfirmReservation(long id)
+  [HttpPost("Confirm/{reservationId}")]
+  public async Task<ActionResult<TicketGetResDTO>> ConfirmReservation(long reservationId)
   {
     try
     {
-      var result = await _useService.ConfirmReservation(id);
+      var result = await _useService.ConfirmReservation(reservationId);
       return Ok(result);
     }
     catch(Exception ex)

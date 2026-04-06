@@ -25,7 +25,7 @@ public class BookingRepository : IBookingRepository
           SeatName = s.Name,
           SeatType = s.SeatType.Code,
           IsSeatEmpty = !_context.BookingTickets
-            .Any(t => t.ShowtimeId == id && t.SeatId == s.Id && t.DeletedAt == null)
+            .Any(t => t.Reservation.ShowtimeId == id && t.SeatId == s.Id && t.DeletedAt == null)
           && !_context.BookingReservations
             .Any(r => r.ShowtimeId == id && r.DeletedAt == null && r.ExpiredAt > now
               && r.BookingReservationSeats.Any(rt => rt.SeatId == s.Id && rt.DeletedAt == null))
@@ -120,13 +120,13 @@ public class BookingRepository : IBookingRepository
     }).FirstOrDefaultAsync();
     return result;
   }
-  public async Task<List<TicketGetResDTO>> ConfirmReservation(long id)
+  public async Task<List<TicketGetResDTO>> ConfirmReservation(long reservationId)
   {
     // 1. Dùng UtcNow nếu DB lưu chuẩn UTC, hoặc giữ .Now nếu DB lưu giờ Local
     var now = DateTime.Now; 
 
     var reservation = await _context.BookingReservations
-        .FirstOrDefaultAsync(r => r.Id == id && r.DeletedAt == null);
+        .FirstOrDefaultAsync(r => r.Id == reservationId && r.DeletedAt == null);
 
     if (reservation == null)
     {
@@ -141,7 +141,7 @@ public class BookingRepository : IBookingRepository
 
     // 3. Lấy danh sách SeatId của đơn hàng này
     var reservationSeats = await _context.BookingReservationSeats
-        .Where(x => x.ReservationId == id && x.DeletedAt == null)
+        .Where(x => x.ReservationId == reservationId && x.DeletedAt == null)
         .Select(x => x.SeatId)
         .ToListAsync();
 
@@ -152,7 +152,7 @@ public class BookingRepository : IBookingRepository
     var hasOtherActiveReservation = await _context.BookingReservationSeats
         .AnyAsync(rs => 
             reservationSeats.Contains(rs.SeatId) 
-            && rs.ReservationId != id 
+            && rs.ReservationId != reservationId 
             && rs.Reservation.ShowtimeId == reservation.ShowtimeId
             && rs.Reservation.ExpiredAt > now // Chỉ tính những thằng CÒN HẠN
             && rs.Reservation.DeletedAt == null // Đảm bảo không tính hàng đã xóa
@@ -162,7 +162,7 @@ public class BookingRepository : IBookingRepository
     var hasTicket = await _context.BookingTickets
         .AnyAsync(t => 
             reservationSeats.Contains(t.SeatId) 
-            && t.ShowtimeId == reservation.ShowtimeId
+            && t.Reservation.ShowtimeId == reservation.ShowtimeId
             && t.DeletedAt == null); // Nếu bạn có dùng Soft Delete cho Ticket
 
     if (hasOtherActiveReservation || hasTicket)
@@ -173,7 +173,7 @@ public class BookingRepository : IBookingRepository
     // 5. Tiến hành tạo vé (giữ nguyên logic của bạn nhưng tối ưu hóa)
     var tickets = reservationSeats.Select(seatId => new BookingTicket
     {
-        ShowtimeId = reservation.ShowtimeId,
+        ReservationId = reservation.ShowtimeId,
         SeatId = seatId,
         CreatedAt = now,
         UpdatedAt = now,
@@ -202,9 +202,9 @@ public class BookingRepository : IBookingRepository
       .Where(x => ticketIds.Contains(x.Id))
       .Select(x => new TicketGetResDTO
       {
-        Address = x.Showtime.Room.Cinema.Address,
-        MovieName = x.Showtime.Movie.Name,
-        RoomName = x.Showtime.Room.Name,
+        Address = x.Reservation.Showtime.Room.Cinema.Address,
+        MovieName = x.Reservation.Showtime.Movie.Name,
+        RoomName = x.Reservation.Showtime.Room.Name,
         SeatName = x.Seat.Name,
         CreatedAt = x.CreatedAt,
         TicketSatus = x.TicketStatus.Code,
@@ -215,13 +215,13 @@ public class BookingRepository : IBookingRepository
   public async Task<List<TicketGetResDTO>> ListTicketByUser(long id)
   {
     var Tickets = await _context.BookingTickets
-      .Where(x => x.CustomerId == id && x.DeletedAt == null)
+      .Where(x => x.Reservation.CustomerId == id && x.DeletedAt == null)
       .Select(x => new TicketGetResDTO
       {
-        MovieName = x.Showtime.Movie.Name,
-        Address = x.Showtime.Room.Cinema.Address,
+        MovieName = x.Reservation.Showtime.Movie.Name,
+        Address = x.Reservation.Showtime.Room.Cinema.Address,
         SeatName = x.Seat.Name,
-        RoomName = x.Showtime.Room.Name,
+        RoomName = x.Reservation.Showtime.Room.Name,
         CreatedAt = x.CreatedAt
       }).ToListAsync();
     return Tickets;
