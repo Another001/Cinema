@@ -44,7 +44,7 @@ public class BookingController : ControllerBase
 			return BadRequest(new { message = ex.Message });
 		}
   }
-  [HttpPost("Confirm/{reservationId}")]
+  [HttpGet("Confirm/{reservationId}")]
   public async Task<ActionResult<TicketGetResDTO>> ConfirmReservation(long reservationId)
   {
     try

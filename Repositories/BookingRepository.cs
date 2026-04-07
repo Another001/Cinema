@@ -173,7 +173,7 @@ public class BookingRepository : IBookingRepository
     // 5. Tiến hành tạo vé (giữ nguyên logic của bạn nhưng tối ưu hóa)
     var tickets = reservationSeats.Select(seatId => new BookingTicket
     {
-        ReservationId = reservation.ShowtimeId,
+        ReservationId = reservation.Id,
         SeatId = seatId,
         CreatedAt = now,
         UpdatedAt = now,
