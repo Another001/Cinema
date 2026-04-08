@@ -216,13 +216,19 @@ public class BookingRepository : IBookingRepository
   {
     var Tickets = await _context.BookingTickets
       .Where(x => x.Reservation.CustomerId == id && x.DeletedAt == null)
+      .OrderByDescending(x => x.CreatedAt)
       .Select(x => new TicketGetResDTO
       {
         MovieName = x.Reservation.Showtime.Movie.Name,
         Address = x.Reservation.Showtime.Room.Cinema.Address,
         SeatName = x.Seat.Name,
         RoomName = x.Reservation.Showtime.Room.Name,
-        CreatedAt = x.CreatedAt
+        CreatedAt = x.CreatedAt,
+        BeginAt = x.Reservation.Showtime.BeginAt,
+        SeatPrice = _context.BookingSeatPrices
+                      .Where(sp => sp.ShowtimeId == x.Reservation.ShowtimeId && sp.SeatTypeId == x.Seat.SeatTypeId)
+                      .Select(sp => sp.SeatPrice)
+                      .FirstOrDefault()
       }).ToListAsync();
     return Tickets;
   }

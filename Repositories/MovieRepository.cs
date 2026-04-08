@@ -41,6 +41,7 @@ public class MovieRepository : IMovieRepository
     var movies = await
       _context.MovieMovies
       .Where(x => x.ReleaseDate <= now && x.EndDate >= now)
+      .OrderByDescending(x => x.ReleaseDate)
       .Select(x => new MovieListResDto
       {
         Id = x.Id,
@@ -59,6 +60,7 @@ public class MovieRepository : IMovieRepository
     var movies = await
       _context.MovieMovies
       .Where(x => x.ReleaseDate >= now)
+      .OrderBy(x => x.ReleaseDate)
       .Select(x => new MovieListResDto
       {
         Id = x.Id,

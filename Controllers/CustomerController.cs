@@ -78,7 +78,7 @@ public class CustomerController : ControllerBase
 		}
 	}
 	[HttpGet("UserTickets/{id}")]
-	public async Task<ActionResult<UserCustomer>> ListTicketsById(long id)
+	public async Task<ActionResult<TicketGetResDTO>> ListTicketsById(long id)
 	{
 		try
 		{

@@ -38,6 +38,8 @@ public class TicketGetResDTO
   public string RoomName{set; get;} = string.Empty;
   public string SeatName{set; get;} = string.Empty;
   public DateTime CreatedAt{set; get;}
+  public DateTime BeginAt{set; get;}
+  public decimal SeatPrice{set; get;}
   public string? TicketSatus{set; get;}
 }
 
