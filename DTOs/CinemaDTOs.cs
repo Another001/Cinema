@@ -30,4 +30,20 @@ namespace MyApi.DTOs
     public string? Address{set; get;}
     public long? CinemaStatusId{set; get;}
   }
+  public class CinemaListResGroupByCity
+  {
+    public required string City{set; get;}
+    public required List<CinemaListResGroupByCinema> Cinemas{set; get;}
+  }
+  public class CinemaListResGroupByCinema
+  {
+    public required long CinemaId{set; get;}
+    public required string Address{set; get;}
+    public required List<CinemaListResGroupByRoom> Rooms{set; get;}
+  }
+  public class CinemaListResGroupByRoom
+  {
+    public required long RoomId{set; get;}
+    public required string RoomName{set; get;}
+  }
 }

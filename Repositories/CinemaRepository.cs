@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MyApi.Models;
 using MyApi.Interfaces;
 using MyApi.DTOs;
+using System.Collections.Immutable;
 
 namespace MyApi.Repositories;
 public class CinemaRepository : ICinemaRepository
@@ -9,7 +10,6 @@ public class CinemaRepository : ICinemaRepository
   private readonly TestContext _context;
   public CinemaRepository(TestContext context) => _context = context;
 
-  //CINEMA
   public async Task<CinemaCinema?> GetCinema(long id)
   {
     return await _context.CinemaCinemas
@@ -31,6 +31,29 @@ public class CinemaRepository : ICinemaRepository
         CinemaStatus = status.Code
       }
     ).ToListAsync();
+    return cinemas;
+  }
+
+  public async Task<List<CinemaListResGroupByCity>?> AdminListCinema()
+  {
+    var cinemas = await _context.CinemaCinemas
+      .GroupBy(cinema => cinema.City)
+      .Select(cinema => new CinemaListResGroupByCity
+      {
+        City = cinema.Key,
+        Cinemas = cinema
+          .Select(x => new CinemaListResGroupByCinema
+          {
+            CinemaId = x.Id,
+            Address = x.Address,
+            Rooms = x.CinemaRooms
+              .Select(y => new CinemaListResGroupByRoom
+              {
+                RoomId = y.Id,
+                RoomName = y.Name,
+              }).ToList()
+          }).ToList()
+      }).ToListAsync();
     return cinemas;
   }
   

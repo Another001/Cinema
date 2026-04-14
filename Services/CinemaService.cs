@@ -32,6 +32,12 @@ public class CinemaService : ICinemaService
     return cinemas;
   }
 
+  public async Task<List<CinemaListResGroupByCity>?> AdminListCinema()
+  {
+    var cinemas = await _userRepo.AdminListCinema();
+    return cinemas;
+  }
+
   public async Task<CinemaCinema> CreateCinema(CinemaCreateReqDto dto)
   {
     if (string.IsNullOrEmpty(dto.City))

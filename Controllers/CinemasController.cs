@@ -30,6 +30,12 @@ public class CinemasController : ControllerBase
 		var result = await _userService.ListCinema(dto);
 		return Ok(result);
 	}
+	[HttpGet("admin")]
+	public async Task<ActionResult<List<CinemaListResGroupByCity>?>> AdminListCinema()
+	{
+		var result = await _userService.AdminListCinema();
+		return Ok(result);
+	}
 	[HttpPost]
 	public async Task<ActionResult<CinemaCinema>> CreateCinema([FromBody] CinemaCreateReqDto dto)
 	{

@@ -8,6 +8,7 @@ public interface ICinemaRepository
   Task<List<CinemaGetResDto>?> ListCinema(CinemaFilterDto query);
   Task<CinemaCinema> CreateCinema(CinemaCinema newCinema);
   Task<CinemaCinema?> UpdateCinema(long id,  CinemaUpdateReqDto dto);
+  Task<List<CinemaListResGroupByCity>?> AdminListCinema();
 
   //Room
   Task<CinemaRoom?> GetRoom(long id);
