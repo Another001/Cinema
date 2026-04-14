@@ -18,6 +18,7 @@ namespace MyApi.DTOs
     public required string Phone { get; set; }
     public required string Email { get; set; } = null!;
     public long UserStatusId { get; set; } = 1;
+    public required long UserTypeId{set; get;}
   }
   public class CustomerGetResDto
   {

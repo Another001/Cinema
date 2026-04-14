@@ -26,6 +26,11 @@ public class MockShowtimeService : IShowtimeService
     var showtimes = await _useRepo.ListShowtime(dto);
     return showtimes;
   }
+   public async Task<List<AdminCityGroupResDto>?> AdminListShowtime(ShowtimeFilterDto dto)
+  {
+    var showtimes = await _useRepo.AdminListShowtime(dto);
+    return showtimes;
+  }
   public async Task<ShowtimeGetResDto> CreateShowtime(ShowtimeCreateReqDto dto)
   {
     var isRoomExist = await _useRepoCinema.GetRoom(dto.RoomId);

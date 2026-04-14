@@ -8,4 +8,5 @@ public interface IShowtimeRepository
   Task<List<CityGroupResDto>> ListShowtime(ShowtimeFilterDto dto);
   Task<MovieShowtime> CreateShowtime(MovieShowtime newShowtime, List<BookingSeatPrice> newSeatPrice);
   Task<ShowtimeGetResDto?> UpdateShowtime(long id, ShowtimeUpdateReqDto dto);
+  Task<List<AdminCityGroupResDto>?> AdminListShowtime(ShowtimeFilterDto dto);
 }

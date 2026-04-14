@@ -91,7 +91,7 @@ public class CustomerService : ICustomerService
       CreatedAt = DateTime.Now,
       UpdatedAt = DateTime.Now,
       RowId = Guid.NewGuid(),
-      UserTypeId = 1,
+      UserTypeId = dto.UserTypeId,
     };
     return customer;
   }

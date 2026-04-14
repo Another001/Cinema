@@ -8,4 +8,5 @@ public interface IShowtimeService : IServiceScoped
   Task<List<CityGroupResDto>?> ListShowtime(ShowtimeFilterDto dto);
   Task<ShowtimeGetResDto> CreateShowtime(ShowtimeCreateReqDto dto);
   Task<ShowtimeGetResDto> UpdateShowtime(long id, ShowtimeUpdateReqDto dto);
+  Task<List<AdminCityGroupResDto>?> AdminListShowtime(ShowtimeFilterDto dto);
 }

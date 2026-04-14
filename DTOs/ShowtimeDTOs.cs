@@ -46,7 +46,22 @@ namespace MyApi.DTOs
     public string? movieName {set; get;}
     public string? CityName { get; set; }
     public List<CinemaGroupResDto>? Cinemas { get; set; }
-}
+  }
+  public class AdminCityGroupResDto
+  {
+    public string? CityName{get; set;}
+    public List<AdminCinemaGroupResDto>? Cinemas{set; get;}
+  }
+  public class AdminCinemaGroupResDto
+  {
+    public string? CinemaAdress{set; get;}
+    public List<AdminRoomGroupResDto>? Rooms{set; get;}
+  }
+  public class AdminRoomGroupResDto
+  {
+    public string? RoomName{set; get;}
+    public List<ShowtimeDetailDto>? Showtimes{get; set;}
+  }
 
   public class CinemaGroupResDto
   {

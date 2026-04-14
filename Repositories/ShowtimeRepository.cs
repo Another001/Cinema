@@ -65,6 +65,39 @@ public class ShowtimeRepository : IShowtimeRepository
 
     return result;
   }
+  public async Task<List<AdminCityGroupResDto>?> AdminListShowtime(ShowtimeFilterDto dto)
+  {
+    var query = ConvertFilterDTOToFilterEntity(dto);
+    var result = await query
+      .GroupBy(s => s.Room.Cinema.City)
+      .Select(cityGroup => new AdminCityGroupResDto
+      {
+        CityName = cityGroup.Key,
+        Cinemas = cityGroup
+          .GroupBy(cityGroup => cityGroup.Room.Cinema.Address)
+          .Select(cinemaGroup => new AdminCinemaGroupResDto
+          {
+            CinemaAdress = cinemaGroup.Key,
+            Rooms = cinemaGroup
+              .GroupBy(cityGroup => cityGroup.Room.Name)
+              .Select(roomGroup => new AdminRoomGroupResDto
+              {
+                RoomName = roomGroup.Key,
+                Showtimes = roomGroup
+                  .Select(x => new ShowtimeDetailDto
+                  {
+                    Id = x.Id,
+                    MovieName = x.Movie.Name,
+                    RoomName = x.Room.Name,
+                    BeginAt = x.BeginAt,
+                    EndAt = x.EndAt
+                  }).ToList()
+              }).ToList()
+          }).ToList()
+      }).ToListAsync();
+
+    return result;
+  }
   public async Task<MovieShowtime> CreateShowtime(MovieShowtime newShowtime, List<BookingSeatPrice> newSeatPrice)
   {
     _context.MovieShowtimes.Add(newShowtime);
@@ -118,6 +151,10 @@ public class ShowtimeRepository : IShowtimeRepository
   private IQueryable<MovieShowtime> ConvertFilterDTOToFilterEntity(ShowtimeFilterDto dto)
   {
     var query = _context.MovieShowtimes.AsQueryable();
+    if (!string.IsNullOrEmpty(dto.City))
+    {
+      query = query.Where(x => x.Room.Cinema.City == dto.City);
+    }
     if (dto.MovieId.HasValue)
     {
       query = query.Where(x => x.MovieId == dto.MovieId);
@@ -129,13 +166,3 @@ public class ShowtimeRepository : IShowtimeRepository
     return query;
   }
 }
-
-
-
-/*          SeatPrices = _context.BookingSeatPrices
-            .Where(p => p.ShowtimeId == showtime.Id && p.DeletedAt == null)
-            .Select(p => new SeatPriceGetResDto
-            {
-              SeatType = p.SeatType.Code, 
-              Price = p.SeatPrice
-            }).ToList()*/

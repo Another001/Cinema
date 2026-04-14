@@ -26,6 +26,12 @@ public class ShowtimeController : ControllerBase
     var showtimes = await _useService.ListShowtime(dto);
     return Ok(showtimes);
   }
+  [HttpGet("admin")]
+  public async Task<ActionResult<List<AdminCityGroupResDto>>> AdminListShowtime([FromQuery] ShowtimeFilterDto dto)
+  {
+    var showtimes = await _useService.AdminListShowtime(dto);
+    return Ok(showtimes);
+  }
   [HttpPost]
   public async Task<ActionResult<ShowtimeGetResDto>> CreateShowtime([FromBody] ShowtimeCreateReqDto dto)
   {
