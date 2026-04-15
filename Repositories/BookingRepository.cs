@@ -33,6 +33,32 @@ public class BookingRepository : IBookingRepository
       ).ToListAsync();
     return seats;
   }
+  public async Task<List<AdminShowtimeGetResTicketDTO>?> AdminShowtimeGet(long ShowtimeId)
+  {
+    var result = await _context.BookingReservations
+      .Where(x => x.ShowtimeId == ShowtimeId)
+      .Select(x => new AdminShowtimeGetResTicketDTO
+      {
+        CustomerId = x.CustomerId,
+        CustomerName = x.Customer.Name,
+        CustomerPhone = x.Customer.Phone,
+        CreatedAt = x.CreatedAt,
+        IsConfirm = _context.BookingTickets
+          .Any(ticket => ticket.ReservationId == x.Id && ticket.DeletedAt == null),
+        CustomerReservation = x.BookingReservationSeats
+          .Select(x => new AdminShowtimeGetResTicketByUserDTO
+          {
+            SeatId = x.SeatId,
+            SeatName = x.Seat.Name,
+            SeatType = x.Seat.SeatType.Code,
+            Price = x.Reservation.Showtime.BookingSeatPrices
+              .Where(price => price.SeatTypeId == x.Seat.SeatTypeId)
+              .Select(price => price.SeatPrice)
+              .FirstOrDefault()
+          }).ToList()
+      }).ToListAsync();
+      return result;
+  }
   public async Task<BookingReservationGetDTO> CreateReservation(BookingReservationCreateDTO dto)
   {
     var now = DateTime.Now;

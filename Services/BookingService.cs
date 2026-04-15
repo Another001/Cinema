@@ -16,6 +16,11 @@ public class BookingService : IBookingService
     var seats = await _useRepo.GetShowtimeSeats(id);
     return seats;
   }
+  public async Task<List<AdminShowtimeGetResTicketDTO>?> AdminShowtimeGet(long ShowtimeId)
+  {
+    var result = await _useRepo.AdminShowtimeGet(ShowtimeId);
+    return result;
+  }
   public async Task<BookingReservationGetDTO> CreateReservation(BookingReservationCreateDTO dto)
   {
     var result = await _useRepo.CreateReservation(dto);

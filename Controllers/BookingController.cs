@@ -18,6 +18,12 @@ public class BookingController : ControllerBase
     var seats = await _useService.GetShowtimeSeats(id);
     return Ok(seats);
   }
+  [HttpGet("ShowtimeDetail/Admin/{ShowtimeId}")]
+  public async Task<ActionResult<List<AdminShowtimeGetResTicketDTO>>> AdminGetShowtime([FromRoute] long ShowtimeId)
+  {
+    var result = await _useService.AdminShowtimeGet(ShowtimeId);
+    return Ok(result);
+  }
   [HttpPost("Reservation")]
   public async Task<ActionResult<BookingReservationGetDTO>> CreateReservation([FromBody] BookingReservationCreateDTO dto)
   {

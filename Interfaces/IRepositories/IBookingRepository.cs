@@ -9,4 +9,5 @@ public interface IBookingRepository
   public Task<BookingReservationGetDTO?> GetReservation(long id);
   public Task<List<TicketGetResDTO>> ConfirmReservation(long reservationId);
   public Task<List<TicketGetResDTO>> ListTicketByUser(long id);
+  public Task<List<AdminShowtimeGetResTicketDTO>?> AdminShowtimeGet(long ShowtimeId);
 }

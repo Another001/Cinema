@@ -7,6 +7,24 @@ public class ShowtimeSeatGetResDTO
   public bool? IsSeatEmpty{set; get;}
 }
 
+public class AdminShowtimeGetResTicketDTO
+{
+  public required long CustomerId{get; set;}
+  public required string CustomerName{set; get;}
+  public required string CustomerPhone{set; get;}
+  public required bool IsConfirm{set; get;}
+  public required DateTime CreatedAt{set; get;}
+  public required List<AdminShowtimeGetResTicketByUserDTO> CustomerReservation{set; get;}
+}
+
+public class AdminShowtimeGetResTicketByUserDTO
+{
+  public required long SeatId{set; get;}
+  public required string SeatName{set; get;}
+  public required string SeatType{set; get;}
+  public required decimal Price{set; get;}
+}
+
 public class ShowtimeSeatCreateReqDTO
 {
   public required long SeatId{set; get;}
