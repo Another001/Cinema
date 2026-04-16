@@ -10,4 +10,5 @@ public interface IMovieService : IServiceScoped
   Task<MovieMovie> UpdateMovie(long id, MovieUpdateDto dto);
   Task<List<MovieListResDto>> ListMovieNow();
   Task<List<MovieListResDto>> ListMovieUpcoming();
+  Task<MovieComment?> CreateComment(CommentCreateReqDto dto);
 }

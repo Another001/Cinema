@@ -100,6 +100,22 @@ public class ShowtimeRepository : IShowtimeRepository
   }
   public async Task<MovieShowtime> CreateShowtime(MovieShowtime newShowtime, List<BookingSeatPrice> newSeatPrice)
   {
+    var onTime = await _context.MovieShowtimes
+      .Where(x => x.RoomId == newShowtime.RoomId
+        && ((newShowtime.BeginAt >= x.BeginAt && newShowtime.BeginAt <= x.EndAt)
+        || (newShowtime.EndAt >= x.BeginAt && newShowtime.EndAt <= x.EndAt)
+        || (newShowtime.BeginAt <= x.BeginAt && newShowtime.EndAt >= x.EndAt))
+        && x.DeletedAt == null)
+        .FirstOrDefaultAsync();
+        Console.WriteLine($"Conflict: {onTime?.Id} - {onTime?.BeginAt} - {onTime?.EndAt}");
+     Console.WriteLine($"New Begin: {newShowtime.BeginAt:yyyy-MM-dd HH:mm:ss}");
+      Console.WriteLine($"New End: {newShowtime.EndAt:yyyy-MM-dd HH:mm:ss}");
+      Console.WriteLine($"Begin: {onTime?.BeginAt:yyyy-MM-dd HH:mm:ss}");
+      Console.WriteLine($"End: {onTime?.EndAt:yyyy-MM-dd HH:mm:ss}");
+    if (onTime != null)
+    {
+      throw new Exception("Phong nay da co lich chieu");
+    }
     _context.MovieShowtimes.Add(newShowtime);
     foreach(var price in newSeatPrice)
     {

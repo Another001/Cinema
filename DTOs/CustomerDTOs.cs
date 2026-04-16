@@ -5,6 +5,7 @@ namespace MyApi.DTOs
   public class CustomerFakeLoginReqDto
   {
     public required string Phone{set; get;}
+    public required string Password{set; get;}
   }
   public class CustomerFakeLoginResDto
   {
@@ -19,6 +20,7 @@ namespace MyApi.DTOs
     public required string Email { get; set; } = null!;
     public long UserStatusId { get; set; } = 1;
     public required long UserTypeId{set; get;}
+    public required string Password{set; get;}
   }
   public class CustomerGetResDto
   {

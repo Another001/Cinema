@@ -66,4 +66,10 @@ public class MovieController : ControllerBase
       return BadRequest(new { message = ex.Message });
     }
   }
+  [HttpPost("comment")]
+  public async Task<ActionResult<MovieComment?>> CreateComment([FromBody] CommentCreateReqDto dto)
+  {
+    var result = await _useService.CreateComment(dto);
+    return Ok(result);
+  }
 }

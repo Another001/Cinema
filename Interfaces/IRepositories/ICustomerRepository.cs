@@ -11,4 +11,5 @@ public interface ICustomerRepository
   Task<CustomerFakeLoginResDto?> FakeLogin(CustomerFakeLoginReqDto dto);
   //Validator
   Task<bool> IsPhoneExisted(string phone);
+  Task<bool> CheckedPassword(CustomerFakeLoginReqDto dto);
 }

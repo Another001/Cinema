@@ -43,6 +43,8 @@ public partial class MovieMovie
 
     public string? Trailer { get; set; }
 
+    public virtual ICollection<MovieComment> MovieComments { get; set; } = new List<MovieComment>();
+
     public virtual ICollection<MovieShowtime> MovieShowtimes { get; set; } = new List<MovieShowtime>();
 
     public virtual MovieMovieStatus MovieStatus { get; set; } = null!;

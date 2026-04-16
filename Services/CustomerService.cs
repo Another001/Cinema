@@ -72,6 +72,11 @@ public class CustomerService : ICustomerService
 
   public async Task<CustomerFakeLoginResDto?> FakeLogin(CustomerFakeLoginReqDto dto)
   {
+    var isTruePassword = await _userRepo.CheckedPassword(dto);
+    if (!isTruePassword)
+    {
+      throw new Exception("Sai ten tai khoan hoac mat khau");
+    }
     var customer = await _userRepo.FakeLogin(dto);
     if(customer == null)
     {
@@ -92,6 +97,7 @@ public class CustomerService : ICustomerService
       UpdatedAt = DateTime.Now,
       RowId = Guid.NewGuid(),
       UserTypeId = dto.UserTypeId,
+      Password = dto.Password
     };
     return customer;
   }

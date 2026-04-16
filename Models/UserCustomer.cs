@@ -25,7 +25,11 @@ public partial class UserCustomer
 
     public long UserTypeId { get; set; }
 
+    public string Password { get; set; } = null!;
+
     public virtual ICollection<BookingReservation> BookingReservations { get; set; } = new List<BookingReservation>();
+
+    public virtual ICollection<MovieComment> MovieComments { get; set; } = new List<MovieComment>();
 
     public virtual UserCustomerStatus UserStatus { get; set; } = null!;
 

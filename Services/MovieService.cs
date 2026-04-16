@@ -58,6 +58,11 @@ public class MockMovieService : IMovieService
       throw; 
     }
   }
+  public async Task<MovieComment?> CreateComment(CommentCreateReqDto dto)
+  {
+    var result = await _useRepo.CreateComment(dto);
+    return result;
+  }
   //Helper
   private MovieMovie ConvertDTOToEntity(MovieCreateReqDto dto)
   {

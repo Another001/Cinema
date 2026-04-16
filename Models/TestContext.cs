@@ -45,6 +45,8 @@ public partial class TestContext : DbContext
 
     public virtual DbSet<CinemaSeatType> CinemaSeatTypes { get; set; }
 
+    public virtual DbSet<MovieComment> MovieComments { get; set; }
+
     public virtual DbSet<MovieMovie> MovieMovies { get; set; }
 
     public virtual DbSet<MovieMovieStatus> MovieMovieStatuses { get; set; }
@@ -380,6 +382,26 @@ public partial class TestContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<MovieComment>(entity =>
+        {
+            entity.ToTable("MovieComment", "Movie");
+
+            entity.Property(e => e.Comment).HasMaxLength(2000);
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.MovieComments)
+                .HasForeignKey(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CustomerId");
+
+            entity.HasOne(d => d.Movie).WithMany(p => p.MovieComments)
+                .HasForeignKey(d => d.MovieId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_MovieId");
+        });
+
         modelBuilder.Entity<MovieMovie>(entity =>
         {
             entity.ToTable("MovieMovie", "Movie");
@@ -487,6 +509,9 @@ public partial class TestContext : DbContext
                 .HasMaxLength(400)
                 .IsUnicode(false);
             entity.Property(e => e.Name)
+                .HasMaxLength(400)
+                .IsUnicode(false);
+            entity.Property(e => e.Password)
                 .HasMaxLength(400)
                 .IsUnicode(false);
             entity.Property(e => e.Phone)

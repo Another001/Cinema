@@ -42,6 +42,7 @@ namespace MyApi.DTOs{
     public string Trailer{set; get;} = string.Empty;
     public string Describe{set; get;} = string.Empty;
     public string? MovieStatus {get; set;}
+    public required List<CommentGetResDto> Comments{set; get;}
   }
   public class MovieFilterDto
   {
@@ -62,5 +63,17 @@ namespace MyApi.DTOs{
     public string? Genre{set; get;}
     public string? Language{set; get;}
     public string? Trailer{set; get;}
+  }
+  public class CommentCreateReqDto
+  {
+    public required long MovieId{set; get;}
+    public required long CustomerId{set; get;}
+    public required string Comment{set; get;}
+  }
+  public class CommentGetResDto
+  {
+    public required string CustomerName{set; get;}
+    public required string Comment{set; get;}
+    public required DateTime CreatedAt{set; get;}
   }
 }

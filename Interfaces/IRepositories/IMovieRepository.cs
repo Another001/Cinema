@@ -10,4 +10,5 @@ public interface IMovieRepository
   Task<List<MovieListResDto>> ListMovieUpcoming();
   Task<MovieMovie> CreateMovie(MovieMovie dto);
   Task<MovieMovie?> UpdateMovie(long id, MovieUpdateDto dto);
+  Task<MovieComment?> CreateComment(CommentCreateReqDto dto);
 }

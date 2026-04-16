@@ -31,8 +31,15 @@ public class MovieRepository : IMovieRepository
         Figure = x.Figure,
         Language = x.Language ?? "",
         Trailer = x.Trailer?? "",
-      })
-      .FirstOrDefaultAsync();
+        Comments =  _context.MovieComments
+          .Where(x => x.MovieId == id)
+          .Select(x => new CommentGetResDto
+          {
+            CustomerName = x.Customer.Name,
+            Comment = x.Comment,
+            CreatedAt = x.CreatedAt,
+          }).ToList()
+      }).FirstOrDefaultAsync();
     return movie;
   }
   public async Task<List<MovieListResDto>> ListMovieNow()
@@ -137,6 +144,19 @@ public class MovieRepository : IMovieRepository
     _context.Entry(movie).State = EntityState.Modified;
     await _context.SaveChangesAsync();
     return movie;
+  }
+  public async Task<MovieComment?> CreateComment(CommentCreateReqDto dto)
+  {
+    var newComment = new MovieComment{
+      CustomerId = dto.CustomerId,
+      MovieId = dto.MovieId,
+      Comment = dto.Comment,
+      CreatedAt = DateTime.Now,
+      UpdatedAt = DateTime.Now
+    };
+    _context.MovieComments.Add(newComment);
+    await _context.SaveChangesAsync();
+    return newComment;
   }
   //Helper
   private IQueryable<MovieMovie> ConvertFilterDTOToFilterEntity(MovieFilterDto dto)

@@ -52,6 +52,14 @@ public class CustomerRepository : ICustomerRepository
     return customer;
   }
 
+  public async Task<bool> CheckedPassword(CustomerFakeLoginReqDto dto)
+  {
+    var password = await _context.UserCustomers
+      .Where(x => x.Phone == dto.Phone)
+      .Select(x => x.Password)
+      .FirstOrDefaultAsync();
+    return password == dto.Password;
+  } 
   public async Task<CustomerFakeLoginResDto?> FakeLogin(CustomerFakeLoginReqDto dto)
   {
     var customer = await _context.UserCustomers
