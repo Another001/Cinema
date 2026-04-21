@@ -52,7 +52,7 @@ public class BookingReservationGetDTO
 public class TicketGetResDTO
 {
   public string MovieName{set; get;} = string.Empty;
-  public string Address{set; get;} = string.Empty;
+  public string Name{set; get;} = string.Empty;
   public string RoomName{set; get;} = string.Empty;
   public string SeatName{set; get;} = string.Empty;
   public DateTime CreatedAt{set; get;}

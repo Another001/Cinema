@@ -31,9 +31,9 @@ public class CinemasController : ControllerBase
 		return Ok(result);
 	}
 	[HttpGet("admin")]
-	public async Task<ActionResult<List<CinemaListResGroupByCity>?>> AdminListCinema()
+	public async Task<ActionResult<List<CinemaListResGroupByCity>?>> AdminListCinema([FromQuery] string? city)
 	{
-		var result = await _userService.AdminListCinema();
+		var result = await _userService.AdminListCinema(city);
 		return Ok(result);
 	}
 	[HttpPost]

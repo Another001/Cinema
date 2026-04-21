@@ -27,36 +27,42 @@ public class CinemaRepository : ICinemaRepository
       select new CinemaGetResDto
       {
         City = cinema.City,
-        Address = cinema.Address,
+        Name = cinema.Name,
         CinemaStatus = status.Code
       }
     ).ToListAsync();
     return cinemas;
   }
 
-  public async Task<List<CinemaListResGroupByCity>?> AdminListCinema()
-  {
-    var cinemas = await _context.CinemaCinemas
-      .GroupBy(cinema => cinema.City)
-      .Select(cinema => new CinemaListResGroupByCity
-      {
-        City = cinema.Key,
-        Cinemas = cinema
-          .Select(x => new CinemaListResGroupByCinema
-          {
-            CinemaId = x.Id,
-            Address = x.Address,
-            Rooms = x.CinemaRooms
-              .Select(y => new CinemaListResGroupByRoom
-              {
-                RoomId = y.Id,
-                RoomName = y.Name,
-              }).ToList()
-          }).ToList()
-      }).ToListAsync();
-    return cinemas;
-  }
-  
+  public async Task<List<CinemaListResGroupByCity>?> AdminListCinema(string? city)
+{
+    var query = _context.CinemaCinemas.AsQueryable();
+    if (!string.IsNullOrEmpty(city))
+    {
+      query = query.Where(x => x.City == city);
+    }
+   var result = await query
+        .GroupBy(x => x.City)   // Group theo City ngay tại Database
+        .Select(g => new CinemaListResGroupByCity
+        {
+            City = g.Key,
+            Cinemas = g.Select(x => new CinemaListResGroupByCinema
+            {
+                CinemaId = x.Id,
+                Name = x.Name,
+                Address = x.Address,
+                Rooms = x.CinemaRooms.Select(y => new CinemaListResGroupByRoom
+                {
+                    RoomId = y.Id,
+                    RoomName = y.Name,
+                    RoomType = y.RoomType.Code
+                }).ToList()
+            }).ToList()
+        })
+        .ToListAsync();
+
+    return result;
+}
   public async Task<CinemaCinema> CreateCinema(CinemaCinema newCinema)
   {
     _context.CinemaCinemas.Add(newCinema);
@@ -73,6 +79,7 @@ public class CinemaRepository : ICinemaRepository
     };
     cinema.City = dto.City ?? cinema.City;
     cinema.Address = dto.Address ?? cinema.Address;
+    cinema.Name = dto.Name ?? cinema.Name;
     cinema.CinemaStatusId = dto.CinemaStatusId ?? cinema.CinemaStatusId;
     cinema.UpdatedAt = DateTime.Now;
     await _context.SaveChangesAsync();
@@ -83,7 +90,7 @@ public class CinemaRepository : ICinemaRepository
   public async Task<CinemaRoom?> GetRoom(long id)
   {
     return await _context.CinemaRooms
-      .Include(u => u.RoomStatus)
+      .Include(u => u.Cinema)
       .FirstOrDefaultAsync(u => u.Id == id && u.DeletedAt == null);
   }
 
@@ -112,7 +119,37 @@ public class CinemaRepository : ICinemaRepository
 
   public async Task<CinemaRoom> CreateRoom(CinemaRoom newRoom)
   {
+    var roomExist = await _context.CinemaRooms
+      .Where(x => x.CinemaId == newRoom.CinemaId && x.Name == newRoom.Name && x.DeletedAt == null)
+      .AnyAsync();
+    if(roomExist)
+      throw new Exception("Ten phong da ton tai");
     _context.CinemaRooms.Add(newRoom);
+    await _context.SaveChangesAsync();
+    var seats = new List<CinemaSeat>();
+    for(char row = 'A'; row <= 'J'; row++)
+    {
+      for(int number = 1; number <= 10; number++)
+      {
+        string seatName = $"{row}{number}";
+        long seatTypeId = 1;
+        if('D' <= row && row <= 'I')
+          seatTypeId = 2;
+        if(row == 'J')
+          seatTypeId = 3;
+        seats.Add(new CinemaSeat
+        {
+          SeatTypeId = seatTypeId,
+          RoomId = newRoom.Id,
+          Name = seatName,
+          CreatedAt = DateTime.Now,
+          UpdatedAt = DateTime.Now,
+          SeatStatusId = 1,
+          RowId = Guid.NewGuid()
+        });
+      }
+    }
+    _context.CinemaSeats.AddRange(seats);
     await _context.SaveChangesAsync();
     return newRoom;
   }
@@ -150,7 +187,7 @@ public class CinemaRepository : ICinemaRepository
       Name = result.Name,
       SeatType = result.SeatType.Code,
       SeatStatus = result.SeatStatus.Code,
-      Cinema = result.Room.Cinema.Address,
+      Cinema = result.Room.Cinema.Name,
       Room = result.Room.Name
     };
   }
@@ -192,7 +229,7 @@ public class CinemaRepository : ICinemaRepository
         Name = seat.Name,
         SeatType = type.Code,
         SeatStatus = status.Code,
-        Cinema = cinema.Address,
+        Cinema = cinema.Name,
         Room = room.Name,
       }
     ).ToListAsync();

@@ -24,6 +24,7 @@ public class ShowtimeRepository : IShowtimeRepository
         CinemaAddress = s.Room.Cinema.Address,
         BeginAt = s.BeginAt,
         EndAt = s.EndAt,
+        CinemaName = s.Room.Cinema.Name,
         SeatPrices = s.BookingSeatPrices
           .Where(x => x.DeletedAt == null)
           .Select(x => new SeatPriceGetResDto
@@ -43,11 +44,12 @@ public class ShowtimeRepository : IShowtimeRepository
       {
         CityName = cityGroup.Key, 
         Cinemas = cityGroup
-          .GroupBy(s => new { s.Room.Cinema.City, s.Room.Cinema.Address })
+          .GroupBy(s => new { s.Room.Cinema.City, s.Room.Cinema.Address, s.Room.Cinema.Name})
           .Select(cinemaGroup => new CinemaGroupResDto
           {
-            CinemaName = cinemaGroup.Key.City,
+            CinemaCity = cinemaGroup.Key.City,
             CinemaAddress = cinemaGroup.Key.Address,
+            CinemaName = cinemaGroup.Key.Name,
             Showtimes = cinemaGroup.Select(s => new ShowtimeDetailDto
             {
               Id = s.Id,
@@ -107,22 +109,29 @@ public class ShowtimeRepository : IShowtimeRepository
         || (newShowtime.BeginAt <= x.BeginAt && newShowtime.EndAt >= x.EndAt))
         && x.DeletedAt == null)
         .FirstOrDefaultAsync();
-        Console.WriteLine($"Conflict: {onTime?.Id} - {onTime?.BeginAt} - {onTime?.EndAt}");
-     Console.WriteLine($"New Begin: {newShowtime.BeginAt:yyyy-MM-dd HH:mm:ss}");
-      Console.WriteLine($"New End: {newShowtime.EndAt:yyyy-MM-dd HH:mm:ss}");
-      Console.WriteLine($"Begin: {onTime?.BeginAt:yyyy-MM-dd HH:mm:ss}");
-      Console.WriteLine($"End: {onTime?.EndAt:yyyy-MM-dd HH:mm:ss}");
+ //       Console.WriteLine($"Conflict: {onTime?.Id} - {onTime?.BeginAt} - {onTime?.EndAt}");
+ //    Console.WriteLine($"New Begin: {newShowtime.BeginAt:yyyy-MM-dd HH:mm:ss}");
+ //     Console.WriteLine($"New End: {newShowtime.EndAt:yyyy-MM-dd HH:mm:ss}");
+  //    Console.WriteLine($"Begin: {onTime?.BeginAt:yyyy-MM-dd HH:mm:ss}");
+  //    Console.WriteLine($"End: {onTime?.EndAt:yyyy-MM-dd HH:mm:ss}");
     if (onTime != null)
     {
       throw new Exception("Phong nay da co lich chieu");
     }
-    _context.MovieShowtimes.Add(newShowtime);
-    foreach(var price in newSeatPrice)
+    try
     {
-      price.Showtime = newShowtime;
+       _context.MovieShowtimes.Add(newShowtime);
+      foreach(var price in newSeatPrice)
+      {
+        price.Showtime = newShowtime;
+      }
+      _context.BookingSeatPrices.AddRange(newSeatPrice);
+      await _context.SaveChangesAsync();
+    } catch (Exception ex) {
+      Console.WriteLine($"Thong bao loiiiiiii {ex.Message}");
+      Console.WriteLine($"Noi loiiiiiiiii {ex.StackTrace}");
+      throw;
     }
-    _context.BookingSeatPrices.AddRange(newSeatPrice);
-    await _context.SaveChangesAsync();
     return newShowtime;
   }
   public async Task<ShowtimeGetResDto?> UpdateShowtime(long id, ShowtimeUpdateReqDto dto)

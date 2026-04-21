@@ -29,6 +29,7 @@ namespace MyApi.DTOs
     public required DateTime BeginAt {get; set;}
     public required DateTime EndAt {get; set;}
     public required string CinemaAddress {get; set;}
+    public required string CinemaName{set; get;}
     public List<SeatPriceGetResDto> SeatPrices{set; get;} = [];
   }
   public class ShowtimeListResDto
@@ -67,6 +68,7 @@ namespace MyApi.DTOs
   {
       public string? CinemaName { get; set; }
       public string? CinemaAddress { get; set; }
+      public string? CinemaCity{set; get;}
       public List<ShowtimeDetailDto>? Showtimes { get; set; }
   }
 

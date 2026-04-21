@@ -59,7 +59,7 @@ public class BookingRepository : IBookingRepository
       }).ToListAsync();
       return result;
   }
-  public async Task<BookingReservationGetDTO> CreateReservation(BookingReservationCreateDTO dto)
+  public async Task<BookingReservationGetDTO?> CreateReservation(BookingReservationCreateDTO dto)
   {
     var now = DateTime.Now;
     //Validate
@@ -228,7 +228,7 @@ public class BookingRepository : IBookingRepository
       .Where(x => ticketIds.Contains(x.Id))
       .Select(x => new TicketGetResDTO
       {
-        Address = x.Reservation.Showtime.Room.Cinema.Address,
+        Name = x.Reservation.Showtime.Room.Cinema.Name,
         MovieName = x.Reservation.Showtime.Movie.Name,
         RoomName = x.Reservation.Showtime.Room.Name,
         SeatName = x.Seat.Name,
@@ -246,7 +246,7 @@ public class BookingRepository : IBookingRepository
       .Select(x => new TicketGetResDTO
       {
         MovieName = x.Reservation.Showtime.Movie.Name,
-        Address = x.Reservation.Showtime.Room.Cinema.Address,
+        Name = x.Reservation.Showtime.Room.Cinema.Name,
         SeatName = x.Seat.Name,
         RoomName = x.Reservation.Showtime.Room.Name,
         CreatedAt = x.CreatedAt,

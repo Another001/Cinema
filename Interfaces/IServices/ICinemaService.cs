@@ -8,7 +8,7 @@ public interface ICinemaService : IServiceScoped
   Task<List<CinemaGetResDto>?> ListCinema(CinemaFilterDto dto);
   Task<CinemaCinema> CreateCinema(CinemaCreateReqDto dto);
   Task<CinemaCinema> UpdateCinema(long id, CinemaUpdateReqDto dto);
-  Task<List<CinemaListResGroupByCity>?> AdminListCinema();
+  Task<List<CinemaListResGroupByCity>?> AdminListCinema(string? city);
   //Room
   Task<CinemaRoom?> GetRoom(long id);
   Task<List<RoomGetResDto>?> ListRoom(RoomFilterDto dto);

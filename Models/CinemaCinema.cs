@@ -21,6 +21,10 @@ public partial class CinemaCinema
 
     public long? CinemaStatusId { get; set; }
 
+    public string Name { get; set; } = null!;
+
+    public string Phone { get; set; } = null!;
+
     public virtual ICollection<CinemaRoom> CinemaRooms { get; set; } = new List<CinemaRoom>();
 
     public virtual CinemaCinemaStatus? CinemaStatus { get; set; }

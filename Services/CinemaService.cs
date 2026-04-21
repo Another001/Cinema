@@ -21,7 +21,7 @@ public class CinemaService : ICinemaService
     }
     return new CinemaGetResDto {
         City = cinema.City,
-        Address = cinema.Address,
+        Name = cinema.Name,
         CinemaStatus = cinema.CinemaStatus?.Code ?? "unknow",
     };
   }
@@ -32,9 +32,9 @@ public class CinemaService : ICinemaService
     return cinemas;
   }
 
-  public async Task<List<CinemaListResGroupByCity>?> AdminListCinema()
+  public async Task<List<CinemaListResGroupByCity>?> AdminListCinema(string? city)
   {
-    var cinemas = await _userRepo.AdminListCinema();
+    var cinemas = await _userRepo.AdminListCinema(city);
     return cinemas;
   }
 
@@ -143,6 +143,8 @@ public class CinemaService : ICinemaService
     {
       City = dto.City,
       Address = dto.Address,
+      Name = dto.Name,
+      Phone = dto.Phone,
       CinemaStatusId = dto.CinemaStatusId,
       CreatedAt = DateTime.Now,
       UpdatedAt = DateTime.Now,

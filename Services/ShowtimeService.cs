@@ -45,6 +45,12 @@ public class MockShowtimeService : IShowtimeService
     }
     var newShowtime = ConvertDTOToEntity(dto);
     await _useRepo.CreateShowtime(newShowtime.Showtime, newShowtime.SeatPrices);
+    Console.WriteLine($"Loi newShowtime.Showtime.BeginAt  {newShowtime.Showtime.BeginAt}");
+    Console.WriteLine($"LoinewShowtime.Showtime.EndAt  {newShowtime.Showtime.EndAt}");
+    Console.WriteLine($"Loi isRoomExist.Cinema.Name  {isRoomExist.Cinema.Name}");
+    Console.WriteLine($"Loi isRoomExist.Cinema.Address  {isRoomExist.Cinema.Address}");
+    Console.WriteLine($"Loi edn");
+    Console.WriteLine($"Loi newShowtime.Showtime.BeginAt  {newShowtime.Showtime.BeginAt}");
     return new ShowtimeGetResDto
     {
       Id = newShowtime.Showtime.Id,
@@ -52,7 +58,8 @@ public class MockShowtimeService : IShowtimeService
       MovieName = newShowtime.Showtime.MovieId.ToString(),
       BeginAt = newShowtime.Showtime.BeginAt,
       EndAt = newShowtime.Showtime.EndAt,
-      CinemaAddress = newShowtime.Showtime.RoomId.ToString(),
+      CinemaName = isRoomExist.Cinema.Name,
+      CinemaAddress = isRoomExist.Cinema.Address,
     };
   }
   public async Task<ShowtimeGetResDto> UpdateShowtime(long id, ShowtimeUpdateReqDto dto)

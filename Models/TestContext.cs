@@ -234,6 +234,10 @@ public partial class TestContext : DbContext
             entity.Property(e => e.City).HasMaxLength(400);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.Name).HasMaxLength(400);
+            entity.Property(e => e.Phone)
+                .HasMaxLength(20)
+                .IsUnicode(false);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.CinemaStatus).WithMany(p => p.CinemaCinemas)

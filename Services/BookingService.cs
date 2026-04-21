@@ -21,7 +21,7 @@ public class BookingService : IBookingService
     var result = await _useRepo.AdminShowtimeGet(ShowtimeId);
     return result;
   }
-  public async Task<BookingReservationGetDTO> CreateReservation(BookingReservationCreateDTO dto)
+  public async Task<BookingReservationGetDTO?> CreateReservation(BookingReservationCreateDTO dto)
   {
     var result = await _useRepo.CreateReservation(dto);
     return result;
