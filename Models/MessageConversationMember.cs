@@ -17,7 +17,11 @@ public partial class MessageConversationMember
 
     public DateTime? DeletedAt { get; set; }
 
+    public long? LastSeenMessage { get; set; }
+
     public virtual MessageConversation Conversation { get; set; } = null!;
+
+    public virtual MessageMessage? LastSeenMessageNavigation { get; set; }
 
     public virtual UserCustomer User { get; set; } = null!;
 }

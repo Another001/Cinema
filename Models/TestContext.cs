@@ -418,6 +418,10 @@ public partial class TestContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ConversationMember_ConversationId");
 
+            entity.HasOne(d => d.LastSeenMessageNavigation).WithMany(p => p.MessageConversationMembers)
+                .HasForeignKey(d => d.LastSeenMessage)
+                .HasConstraintName("FK_MessageConversationMember_LastSeenMessage");
+
             entity.HasOne(d => d.User).WithMany(p => p.MessageConversationMembers)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)

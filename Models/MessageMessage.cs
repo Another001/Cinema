@@ -23,5 +23,7 @@ public partial class MessageMessage
 
     public virtual MessageConversation Conversation { get; set; } = null!;
 
+    public virtual ICollection<MessageConversationMember> MessageConversationMembers { get; set; } = new List<MessageConversationMember>();
+
     public virtual UserCustomer Sender { get; set; } = null!;
 }

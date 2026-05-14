@@ -3,6 +3,7 @@ using MyApi.Interfaces;
 using MyApi.Models;
 using MyApi.DTOs;
 using MyApi.Repositories;
+using System.Linq.Expressions;
 
 namespace MyApi.Services;
 
@@ -32,5 +33,10 @@ public class MessageService : IMessageService
   {
     var contacts = await _messageRepo.ListContact(userId);
     return contacts;
+  }
+  public async Task MarkAsRead(long userId, long conversationId, long messageId)
+  {
+    await _messageRepo.MarkAsRead(userId, conversationId, messageId);
+    return;
   }
 }

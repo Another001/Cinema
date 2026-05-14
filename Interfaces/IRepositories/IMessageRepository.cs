@@ -9,4 +9,5 @@ public interface IMessageRepository
   public Task<List<MessageGetResDto>?> ListMessage(long conversationId);
   public Task<MessageMessage> SaveMessage(long userId, long conversationId, string message);
   public Task<List<ContactGetResDto>?> ListContact(long userId);
+  public Task MarkAsRead(long userId, long conversationId, long messageId);
 }

@@ -93,7 +93,7 @@ public class MessageRepository : IMessageRepository
       {
         ConversationId = x.ConversationId,
         NameContact = _context.MessageConversationMembers
-          .Where(y => y.UserId != userId && y.DeletedAt == null)
+          .Where(y => y.UserId != userId && y.DeletedAt == null && y.ConversationId == x.ConversationId)
           .Select(y => y.User.Name)
           .FirstOrDefault() ?? "",
         PreviewMessage = x.Conversation.MessageMessages.OrderByDescending(y => y.CreatedAt)
@@ -104,10 +104,23 @@ public class MessageRepository : IMessageRepository
             SenderId = y.SenderId,
             SenderName = y.Sender.Name,
             TimeLastMessage = y.CreatedAt,
+            IsSeen = x.LastSeenMessage == y.Id,
           })
           .FirstOrDefault(),
       })
       .ToListAsync();
     return contacts;
+  }
+  public async Task MarkAsRead(long userId, long conversationId, long messageId)
+  {
+    var member = await _context.MessageConversationMembers
+      .Where(x => x.UserId == userId && x.ConversationId == conversationId && x.DeletedAt == null)
+      .Select(x => x)
+      .FirstOrDefaultAsync();
+    Console.WriteLine($"Tim duoc member ko vay {member}");
+    if(member == null)
+      return;
+    member.LastSeenMessage = messageId;
+    await _context.SaveChangesAsync();
   }
 }

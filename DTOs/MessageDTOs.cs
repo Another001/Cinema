@@ -22,4 +22,5 @@ public class PreviewMessageResDto
   public string SenderName{set; get;} = string.Empty;
   public long SenderId{set; get;}
   public DateTime TimeLastMessage{set; get;}
+  public bool IsSeen{set; get;}
 }

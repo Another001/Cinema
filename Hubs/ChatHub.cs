@@ -37,4 +37,8 @@ public class ChatHub : Hub
       return;
     await Groups.AddToGroupAsync(Context.ConnectionId ,$"userId-44");
   }
+  public async Task MaskAsRead(long userId, long conversationId, long messageId)
+  {
+    await _messageService.MarkAsRead(userId, conversationId, messageId);
+  }
 }
