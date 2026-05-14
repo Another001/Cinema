@@ -29,6 +29,10 @@ public partial class UserCustomer
 
     public virtual ICollection<BookingReservation> BookingReservations { get; set; } = new List<BookingReservation>();
 
+    public virtual ICollection<MessageConversationMember> MessageConversationMembers { get; set; } = new List<MessageConversationMember>();
+
+    public virtual ICollection<MessageMessage> MessageMessages { get; set; } = new List<MessageMessage>();
+
     public virtual ICollection<MovieComment> MovieComments { get; set; } = new List<MovieComment>();
 
     public virtual UserCustomerStatus UserStatus { get; set; } = null!;

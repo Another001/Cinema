@@ -45,6 +45,12 @@ public partial class TestContext : DbContext
 
     public virtual DbSet<CinemaSeatType> CinemaSeatTypes { get; set; }
 
+    public virtual DbSet<MessageConversation> MessageConversations { get; set; }
+
+    public virtual DbSet<MessageConversationMember> MessageConversationMembers { get; set; }
+
+    public virtual DbSet<MessageMessage> MessageMessages { get; set; }
+
     public virtual DbSet<MovieComment> MovieComments { get; set; }
 
     public virtual DbSet<MovieMovie> MovieMovies { get; set; }
@@ -384,6 +390,58 @@ public partial class TestContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(400)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<MessageConversation>(entity =>
+        {
+            entity.ToTable("MessageConversation", "Message");
+
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.Image)
+                .HasMaxLength(400)
+                .IsUnicode(false);
+            entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<MessageConversationMember>(entity =>
+        {
+            entity.ToTable("MessageConversationMember", "Message");
+
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Conversation).WithMany(p => p.MessageConversationMembers)
+                .HasForeignKey(d => d.ConversationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ConversationMember_ConversationId");
+
+            entity.HasOne(d => d.User).WithMany(p => p.MessageConversationMembers)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ConversationMember_UserId");
+        });
+
+        modelBuilder.Entity<MessageMessage>(entity =>
+        {
+            entity.ToTable("MessageMessage", "Message");
+
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.Message).HasMaxLength(1000);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Conversation).WithMany(p => p.MessageMessages)
+                .HasForeignKey(d => d.ConversationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Message_ConversationId");
+
+            entity.HasOne(d => d.Sender).WithMany(p => p.MessageMessages)
+                .HasForeignKey(d => d.SenderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Message_SenderId");
         });
 
         modelBuilder.Entity<MovieComment>(entity =>
