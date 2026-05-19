@@ -12,6 +12,7 @@ public class ContactGetResDto
 {
   public long ConversationId{set; get;}
   public string NameContact{set; get;} = string.Empty;
+  public string PhoneContact{set; get;} = string.Empty;
   public PreviewMessageResDto? PreviewMessage{set; get;}
 }
 

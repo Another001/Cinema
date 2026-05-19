@@ -89,12 +89,20 @@ public class MessageRepository : IMessageRepository
   {
     var contacts = await _context.MessageConversationMembers
       .Where(x => x.UserId == userId && x.DeletedAt == null)
+      .OrderByDescending(x => x.Conversation.MessageMessages
+        .OrderByDescending(m => m.CreatedAt)
+        .Select(m => (DateTime?)m.CreatedAt) // Ép kiểu sang Nullable để tránh lỗi nếu không có tin nhắn
+        .FirstOrDefault() ?? x.CreatedAt)
       .Select(x => new ContactGetResDto
       {
         ConversationId = x.ConversationId,
         NameContact = _context.MessageConversationMembers
           .Where(y => y.UserId != userId && y.DeletedAt == null && y.ConversationId == x.ConversationId)
           .Select(y => y.User.Name)
+          .FirstOrDefault() ?? "",
+        PhoneContact = _context.MessageConversationMembers
+          .Where(y => y.UserId != userId && y.DeletedAt == null && y.ConversationId == x.ConversationId)
+          .Select(y => y.User.Phone)
           .FirstOrDefault() ?? "",
         PreviewMessage = x.Conversation.MessageMessages.OrderByDescending(y => y.CreatedAt)
           .Select(y => new PreviewMessageResDto
@@ -106,7 +114,15 @@ public class MessageRepository : IMessageRepository
             TimeLastMessage = y.CreatedAt,
             IsSeen = x.LastSeenMessage == y.Id,
           })
-          .FirstOrDefault(),
+          .FirstOrDefault() ?? new PreviewMessageResDto
+          {
+            LastMessageId = 0,
+            LastMessage = "Chưa có tin nhắn",
+            SenderId = 44,
+            SenderName = "Admin",
+            TimeLastMessage = x.CreatedAt,
+            IsSeen = true,
+          },
       })
       .ToListAsync();
     return contacts;
