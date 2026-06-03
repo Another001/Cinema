@@ -402,6 +402,9 @@ public partial class TestContext : DbContext
                 .HasMaxLength(400)
                 .IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.State)
+                .HasMaxLength(10)
+                .IsFixedLength();
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
         });
 
@@ -626,7 +629,7 @@ public partial class TestContext : DbContext
             entity.Property(e => e.Color)
                 .HasMaxLength(400)
                 .IsUnicode(false);
-            entity.Property(e => e.Name)
+            entity.Property(e => e.Role)
                 .HasMaxLength(400)
                 .IsFixedLength();
         });

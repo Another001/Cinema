@@ -9,7 +9,7 @@ public partial class UserCustomerType
 
     public string Code { get; set; } = null!;
 
-    public string? Name { get; set; }
+    public string Role { get; set; } = null!;
 
     public string? Color { get; set; }
 

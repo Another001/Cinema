@@ -20,7 +20,8 @@ public class CustomerService : ICustomerService
       Name = user.Name,
       Email = user.Email,
       Phone = user.Phone,
-      Status = user.UserStatus.Name
+      Status = user.UserStatus.Name,
+      Role = user.UserType.Code,
     };
   }
   public async Task<List<CustomerGetResDto>?> List(CustomerFilterDto dto)
@@ -84,6 +85,7 @@ public class CustomerService : ICustomerService
     }
     return customer;
   }
+  
   //Helper
   private UserCustomer ConvertDTOToEntity(CustomerCreateReqDto dto)
   {

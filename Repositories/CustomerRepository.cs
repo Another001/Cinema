@@ -13,6 +13,7 @@ public class CustomerRepository : ICustomerRepository
   {
     return await _context.UserCustomers
       .Include(u => u.UserStatus)
+      .Include(u => u.UserType)
       .FirstOrDefaultAsync(u => u.Id == id && u.DeletedAt == null);
   }
   public async Task<List<CustomerGetResDto>?> List(CustomerFilterDto dto)
@@ -22,12 +23,15 @@ public class CustomerRepository : ICustomerRepository
       from customer in query
       join status in _context.UserCustomerStatuses
       on customer.UserStatusId equals status.Id
+      join type in _context.UserCustomerTypes
+      on customer.UserTypeId equals type.Id
       select new CustomerGetResDto
       {
         Name = customer.Name,
         Email = customer.Email,
         Phone = customer.Phone,
-        Status = status.Code
+        Status = status.Code,
+        Role = type.Role,
       }
     ).ToListAsync();
     return customers;
@@ -69,6 +73,7 @@ public class CustomerRepository : ICustomerRepository
         Id = x.Id,
         Name = x.Name,
         Phone = x.Phone,
+        Role = x.UserType.Code
       })
       .FirstOrDefaultAsync();
     return customer;

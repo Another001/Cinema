@@ -56,6 +56,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowNextJs");
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<ChatHub_v2>("/chatHub-v2");
 
 app.UseCors("AllowReactApp");
 

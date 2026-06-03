@@ -12,6 +12,7 @@ namespace MyApi.DTOs
     public required long Id{set; get;}
     public required string Name{set; get;}
     public required string Phone{set; get;}
+    public required string Role{set; get;}
   }
   public class CustomerCreateReqDto
   {
@@ -28,6 +29,7 @@ namespace MyApi.DTOs
     public string Phone {get; set;} = string.Empty;
     public string Email {get; set;} = string.Empty;
     public string? Status {get; set;}
+    public required string Role{set; get;}
   }
   public class CustomerFilterDto
   {

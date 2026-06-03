@@ -19,6 +19,8 @@ public partial class MessageConversation
 
     public DateTime? DeletedAt { get; set; }
 
+    public string State { get; set; } = null!;
+
     public virtual ICollection<MessageConversationMember> MessageConversationMembers { get; set; } = new List<MessageConversationMember>();
 
     public virtual ICollection<MessageMessage> MessageMessages { get; set; } = new List<MessageMessage>();
