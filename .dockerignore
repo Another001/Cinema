@@ -1,0 +1,22 @@
+# .dockerignore: liệt kê file/thư mục KHÔNG copy vào Docker khi build.
+# Giúp build nhanh hơn, image nhẹ hơn, tránh lỗi lạ.
+
+# Thư mục build trung gian của Visual Studio / dotnet -> không cần copy vào
+bin/
+obj/
+
+# Git -> không cần mang vào image
+.git/
+.gitignore
+
+# File Visual Studio user-specific
+*.user
+*.suo
+.vs/
+
+# File Dockerfile và docker-compose tự nó cũng không cần copy vào /src
+Dockerfile*
+docker-compose*
+
+# File môi trường local (chứa secret) -> không copy bừa vào image
+.env
