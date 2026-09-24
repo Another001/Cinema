@@ -67,9 +67,9 @@ public partial class TestContext : DbContext
 
     public virtual DbSet<UserCustomerType> UserCustomerTypes { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-76A1KAF\\SQLEXPRESS;Database=test;Trusted_Connection=True;TrustServerCertificate=True");
+//     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+//         => optionsBuilder.UseSqlServer("Server=DESKTOP-76A1KAF\\SQLEXPRESS;Database=test;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -77,11 +77,11 @@ public partial class TestContext : DbContext
         {
             entity.ToTable("BookingReservation", "Booking");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.ExpiredAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.TotalPrice).HasColumnType("decimal(22, 4)");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.BookingReservations)
                 .HasForeignKey(d => d.CustomerId)
@@ -104,9 +104,9 @@ public partial class TestContext : DbContext
 
             entity.HasIndex(e => new { e.ReservationId, e.SeatId }, "UC_BookingReservationSeat").IsUnique();
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Reservation).WithMany(p => p.BookingReservationSeats)
                 .HasForeignKey(d => d.ReservationId)
@@ -145,12 +145,12 @@ public partial class TestContext : DbContext
 
             entity.HasIndex(e => new { e.ShowtimeId, e.SeatTypeId }, "UIX_ShowtimeSeatPrice_Active")
                 .IsUnique()
-                .HasFilter("([DeletedAt] IS NULL)");
+                .HasFilter("\"DeletedAt\" IS NULL");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.SeatPrice).HasColumnType("decimal(22, 4)");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.SeatPriceStatus).WithMany(p => p.BookingSeatPrices)
                 .HasForeignKey(d => d.SeatPriceStatusId)
@@ -192,9 +192,9 @@ public partial class TestContext : DbContext
 
             entity.HasIndex(e => new { e.ReservationId, e.SeatId }, "UC_BookingTicket").IsUnique();
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Reservation).WithMany(p => p.BookingTickets)
                 .HasForeignKey(d => d.ReservationId)
@@ -238,13 +238,13 @@ public partial class TestContext : DbContext
 
             entity.Property(e => e.Address).HasMaxLength(400);
             entity.Property(e => e.City).HasMaxLength(400);
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Name).HasMaxLength(400);
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .IsUnicode(false);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.CinemaStatus).WithMany(p => p.CinemaCinemas)
                 .HasForeignKey(d => d.CinemaStatusId)
@@ -275,10 +275,10 @@ public partial class TestContext : DbContext
 
             entity.ToTable("CinemaRoom", "Cinema");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Name).HasMaxLength(400);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Cinema).WithMany(p => p.CinemaRooms)
                 .HasForeignKey(d => d.CinemaId)
@@ -335,10 +335,10 @@ public partial class TestContext : DbContext
         {
             entity.ToTable("CinemaSeat", "Cinema");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Name).HasMaxLength(400);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Room).WithMany(p => p.CinemaSeats)
                 .HasForeignKey(d => d.RoomId)
@@ -396,8 +396,8 @@ public partial class TestContext : DbContext
         {
             entity.ToTable("MessageConversation", "Message");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Image)
                 .HasMaxLength(400)
                 .IsUnicode(false);
@@ -405,16 +405,16 @@ public partial class TestContext : DbContext
             entity.Property(e => e.State)
                 .HasMaxLength(10)
                 .IsFixedLength();
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
         });
 
         modelBuilder.Entity<MessageConversationMember>(entity =>
         {
             entity.ToTable("MessageConversationMember", "Message");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Conversation).WithMany(p => p.MessageConversationMembers)
                 .HasForeignKey(d => d.ConversationId)
@@ -435,10 +435,10 @@ public partial class TestContext : DbContext
         {
             entity.ToTable("MessageMessage", "Message");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Message).HasMaxLength(1000);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Conversation).WithMany(p => p.MessageMessages)
                 .HasForeignKey(d => d.ConversationId)
@@ -456,9 +456,9 @@ public partial class TestContext : DbContext
             entity.ToTable("MovieComment", "Movie");
 
             entity.Property(e => e.Comment).HasMaxLength(2000);
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.MovieComments)
                 .HasForeignKey(d => d.CustomerId)
@@ -476,21 +476,21 @@ public partial class TestContext : DbContext
             entity.ToTable("MovieMovie", "Movie");
 
             entity.Property(e => e.Cast).HasMaxLength(400);
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Describe).HasMaxLength(4000);
             entity.Property(e => e.Director).HasMaxLength(400);
-            entity.Property(e => e.EndDate).HasColumnType("datetime");
+            entity.Property(e => e.EndDate).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Figure)
                 .HasMaxLength(400)
                 .IsUnicode(false);
             entity.Property(e => e.Genre).HasMaxLength(400);
             entity.Property(e => e.Language).HasMaxLength(400);
             entity.Property(e => e.Name).HasMaxLength(400);
-            entity.Property(e => e.ReleaseDate).HasColumnType("datetime");
+            entity.Property(e => e.ReleaseDate).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Title).HasMaxLength(400);
             entity.Property(e => e.Trailer).HasMaxLength(400);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.MovieStatus).WithMany(p => p.MovieMovies)
                 .HasForeignKey(d => d.MovieStatusId)
@@ -522,13 +522,13 @@ public partial class TestContext : DbContext
 
             entity.HasIndex(e => new { e.MovieId, e.RoomId, e.BeginAt }, "UC_ShowtimeShowtime").IsUnique();
 
-            entity.Property(e => e.BeginAt).HasColumnType("datetime");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.BeginAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.EndAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Movie).WithMany(p => p.MovieShowtimes)
                 .HasForeignKey(d => d.MovieId)
@@ -572,8 +572,8 @@ public partial class TestContext : DbContext
 
             entity.HasIndex(e => e.Phone, "UC_UserCustomer").IsUnique();
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Email)
                 .HasMaxLength(400)
                 .IsUnicode(false);
@@ -586,7 +586,7 @@ public partial class TestContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(400)
                 .IsUnicode(false);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.UserTypeId).HasDefaultValue(1L);
 
             entity.HasOne(d => d.UserStatus).WithMany(p => p.UserCustomers)
